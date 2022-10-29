@@ -8,7 +8,8 @@
 #define DECIMAL 3
 #define STRING 4
 #define DATE 5
-#define OTHER 6
+#define IGNORE 6
+#define ERROR 7
 
 #define STRING_MAXLENGTH 500
 
@@ -21,7 +22,7 @@ union current_payload {
 /* type names - for the table UI */
 static const char *token_names[] = {
     "END", "RECORD_NUMBER", "PROP_NAME",
-    "DECIMAL",  "STRING", "DATE", "OTHER"
+    "DECIMAL",  "STRING", "DATE"
 };
 
 // Removes the first & last chars of yytext, and puts it into current_payload.text.
@@ -70,10 +71,10 @@ void copy_parse_string2() {
 }
 
  /* Skip whitespaces and new lines */
-[\r\t\n ] { return OTHER; }
+[\r\t\n ] { return IGNORE; }
 
  /* Skip others */
-. { fprintf(stderr, "Unrecognized token '%c' (%d) @ line %d!\n", *yytext, *yytext, yylineno); return OTHER; }
+. { return ERROR; }
 
 %%
 
@@ -97,7 +98,13 @@ int main(int argc, char* argv[]) {
     // Tokenize & print
     int token_type = 0;
     while (token_type = yylex()) {
-        if (token_type == OTHER) continue;
+        // whitespace, etc.
+        if (token_type == IGNORE) continue;
+        // error
+        if (token_type == ERROR) {
+            fprintf(stderr, "Unrecognized token '%c' (%d) @ line %d!\n", *yytext, *yytext, yylineno);
+            continue;
+        }
 
         printf("%-10s\t%-20s\t", token_names[token_type], yytext);
 

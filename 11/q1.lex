@@ -45,14 +45,16 @@ static const char *map[] = {
 
 int main(int argc, char* argv[]) {
     ++argv, --argc;  /* skip over program name */
-    if (argc > 0)
+    if (argc > 0) {
         yyin = fopen(*argv, "r");
         if (!yyin) {
             fprintf(stderr, "Failed to open file %s. Using stdin instead.", *argv);
             yyin = stdin;
         }
-    else
+    }
+    else {
         yyin = stdin;
+    }
 
     // check if file is empty.
     int c = fgetc(yyin);

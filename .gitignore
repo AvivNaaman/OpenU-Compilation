@@ -12,3 +12,5 @@
 
 # And ignore flex generated C files
 *.yy.c
+
+~$*.docx
