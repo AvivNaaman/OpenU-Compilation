@@ -43,16 +43,24 @@ static const char *map[] = {
 
 %%
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
     ++argv, --argc;  /* skip over program name */
     if (argc > 0)
-        yyin = fopen( argv[0], "r" );
+        yyin = fopen(*argv, "r");
+        if (!yyin) {
+            fprintf(stderr, "Failed to open file %s. Using stdin instead.", *argv);
+            yyin = stdin;
+        }
     else
         yyin = stdin;
 
-    if (!feof(yyin)) {  
-        printf("1.\t");
+    // check if file is empty.
+    int c = fgetc(yyin);
+    if (c == EOF) {
+        exit(0);
+    } else {
+        printf("%s", "1.\t");
+        ungetc(c, yyin);
     }
 
     yylex();

@@ -72,25 +72,30 @@ void copy_parse_string2() {
  /* Skip whitespaces and new lines */
 [\r\t\n ] { return OTHER; }
 
-
-
  /* Skip others */
-. { fprintf(stderr, "Unrecognized token '%c' (%d) @ line %d! \n", *yytext, *yytext, yylineno); return OTHER; }
+. { fprintf(stderr, "Unrecognized token '%c' (%d) @ line %d!\n", *yytext, *yytext, yylineno); return OTHER; }
 
 %%
 
-int main(int argc, char* argv[])
-{
-    ++argv, --argc;  /* skip over program name */
-    if (argc > 0)
-        yyin = fopen( argv[0], "r" );
-    else
-        yyin = stdin;
-    int token_type = 0;
-
+int main(int argc, char* argv[]) {
+    // open input file
+    if (argc > 1) {
+        yyin = fopen(argv[1], "r");
+        if (!yyin) {
+            fprintf(stderr, "Failed to open file '%s'. Aborting,\n", argv[1]);
+            exit(1);
+        }
+    }
+    else {
+        fprintf(stderr, "Missing file argument! Usage: %s filename\n", argv[0]);
+        exit(1);
+    }
+    
     // Header
     printf("%-10s\t%-20s\t%-20s\n", "TOKEN", "LEXEME", "ATTRIBUTE");
 
+    // Tokenize & print
+    int token_type = 0;
     while (token_type = yylex()) {
         if (token_type == OTHER) continue;
 
