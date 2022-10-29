@@ -1,0 +1,14 @@
+# Ignore all in subfolder
+*/*
+
+# except those with extension
+!*/*.*
+
+# or makefile
+!Makefile
+
+# Ignore mac stuff
+.DS_Store
+
+# And ignore flex generated C files
+*.yy.c

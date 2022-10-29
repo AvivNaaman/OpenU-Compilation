@@ -1,0 +1,11 @@
+[1] <time> 9.86 <athlete> "Carl Lewis" <country> "United
+States" <date> 25 August 1991
+[2] <time> 9.69  <athlete> "Tyson Gay" <country> "United
+States" <date>  20 September 2009
+[3] <time> 9.82  <athlete> "Donovan Baily"  <country>
+"Canada" <date> 27 July 1996
+[4] <time> 9.58
+   <athlete> "Usain Bolt"
+   <country> "Jamaica"  <date> 16 August 2009
+[5] <time> 9.79 <athlete> "Maurice Greene"  <country>
+"United State"  <date> 16 June 1999
