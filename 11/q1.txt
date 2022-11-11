@@ -2,3 +2,8 @@
 10 green bottles hanging on the wall
 And if 1 green bottle should accidentally fall,
 There'll be 9 green bottles hanging on the wall.
+Let's test some numbers: 0 1 2 3 4 5 6 7 8 9 10 11 12 01 02 010 09
+Hello, World! One (1) is good, (2) is bad, and we're nto sad!
+
+1 12 [9] V1x8t 0000000 0 
+That's line 9. Goodbye!

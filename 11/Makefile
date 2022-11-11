@@ -4,7 +4,7 @@ LEX_OUT_EXT = yy.c
 CC = gcc
 
 # If you need to compile more single-lex executables, just add their prefix here, before clean.
-all: q1 q2 clean
+all: q1 athlete clean_inter
 
 # Template for 2-stage flex-gcc compilations
 %: %.$(LEX_EXT)
@@ -12,5 +12,9 @@ all: q1 q2 clean
 	$(CC) $@.$(LEX_OUT_EXT) -o $@
 
 # Remove temporary .yy.c files from flex.
-clean:
+clean_inter:
 	rm -f *.$(LEX_OUT_EXT)
+
+# Remove executables
+clean: clean_inter
+	find . -maxdepth 1 -type f -executable -exec rm {} +

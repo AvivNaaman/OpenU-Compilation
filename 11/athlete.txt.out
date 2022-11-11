@@ -1,0 +1,52 @@
+TOKEN     	LEXEME              	ATTRIBUTE           
+RECORD_NUMBER	[1]                 	1                   
+PROP_NAME 	<time>              	time                
+DECIMAL   	9.86                	9.860000            
+PROP_NAME 	<athlete>           	athlete             
+STRING    	"Carl Lewis"        	Carl Lewis          
+PROP_NAME 	<country>           	country             
+STRING    	"United
+States"     	United
+States       
+PROP_NAME 	<date>              	date                
+DATE      	25 August 1991      	25 August 1991      
+RECORD_NUMBER	[2]                 	2                   
+PROP_NAME 	<time>              	time                
+DECIMAL   	9.69                	9.690000            
+PROP_NAME 	<athlete>           	athlete             
+STRING    	"Tyson Gay"         	Tyson Gay           
+PROP_NAME 	<country>           	country             
+STRING    	"United
+States"     	United
+States       
+PROP_NAME 	<date>              	date                
+DATE      	20 September 2009   	20 September 2009   
+RECORD_NUMBER	[3]                 	3                   
+PROP_NAME 	<time>              	time                
+DECIMAL   	9.82                	9.820000            
+PROP_NAME 	<athlete>           	athlete             
+STRING    	"Donovan Baily"     	Donovan Baily       
+PROP_NAME 	<country>           	country             
+STRING    	"Canada"            	Canada              
+PROP_NAME 	<date>              	date                
+DATE      	27 July 1996        	27 July 1996        
+RECORD_NUMBER	[4]                 	4                   
+PROP_NAME 	<time>              	time                
+DECIMAL   	9.58                	9.580000            
+PROP_NAME 	<athlete>           	athlete             
+STRING    	"Usain Bolt"        	Usain Bolt          
+PROP_NAME 	<country>           	country             
+STRING    	"Jamaica"           	Jamaica             
+PROP_NAME 	<date>              	date                
+DATE      	16 August 2009      	16 August 2009      
+RECORD_NUMBER	[5]                 	5                   
+PROP_NAME 	<time>              	time                
+DECIMAL   	9.79                	9.790000            
+PROP_NAME 	<athlete>           	athlete             
+STRING    	"Maurice Greene"    	Maurice Greene      
+PROP_NAME 	<country>           	country             
+STRING    	"United State"      	United State        
+PROP_NAME 	<date>              	date                
+DATE      	16 June 1999        	16 June 1999        
+STRING    	"Expect an error::" 	Expect an error::   
+Unrecognized token 't' (116) @ line 13!
