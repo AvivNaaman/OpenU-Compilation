@@ -14,7 +14,3 @@ all: q1 athlete clean_inter
 # Remove temporary .yy.c files from flex.
 clean_inter:
 	rm -f *.$(LEX_OUT_EXT)
-
-# Remove executables
-clean: clean_inter
-	find . -maxdepth 1 -type f -executable -exec rm {} +
