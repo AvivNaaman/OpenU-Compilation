@@ -29,6 +29,7 @@ typedef enum token_type {
     // num & id
     IDENTIFIER, NUMBER,
     
+    COMMENT,
     ERROR
 } token_type;
 
@@ -145,10 +146,10 @@ static_cast\<(int|float)\> {
     return NUMBER;
 }
 
- /* C-Style comments */
-"/*"            { BEGIN(C_COMMENT); }
-<C_COMMENT>"*/" { BEGIN(INITIAL); }
-<C_COMMENT>[\n.]   { }
+ /* C-Style comments, will be ignored completly. */
+"/*"            { BEGIN(C_COMMENT); return COMMENT; }
+<C_COMMENT>"*/" { BEGIN(INITIAL); return COMMENT; }
+<C_COMMENT>[\n.]   { return COMMENT; }
 
  /* Skip whitespaces and new lines */
 [\r\t\n ] { }
@@ -208,6 +209,9 @@ void print_token_attr(token_type ttype) {
         case MULOP:
             printf("%c", current_attr.relop[0]);
             break;
+        // others, nothing interesting to print.
+        default:
+            break;
     }
 }
 
@@ -220,10 +224,13 @@ int main(int argc, char* argv[]) {
 
     // Tokenize & print
     int token_type = 0;
-    while (token_type = yylex()) {
+    while ((token_type = yylex())) {
         // Print Error
         if (token_type == ERROR) {
             fprintf(ERR_OUTPUT_FILE, "Unrecognized token '%c' (%d) @ line %d!\n", *yytext, *yytext, yylineno);
+            continue;
+        }
+        if (token_type == COMMENT) {
             continue;
         }
 
