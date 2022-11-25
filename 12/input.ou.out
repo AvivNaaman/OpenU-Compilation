@@ -1,0 +1,173 @@
+TOKEN     	LEXEME              	ATTRIBUTE           
+IDENTIFIER	a                   	a
+COMMA     	,                   	
+IDENTIFIER	b                   	b
+COLON     	:                   	
+FLOAT_T   	float               	
+SEMICOLON 	;                   	
+LCURLY    	{                   	
+INPUT_T   	input               	
+LPARENT   	(                   	
+IDENTIFIER	a                   	a
+RPARENT   	)                   	
+SEMICOLON 	;                   	
+INPUT_T   	input               	
+LPARENT   	(                   	
+IDENTIFIER	b                   	b
+RPARENT   	)                   	
+SEMICOLON 	;                   	
+IF_T      	if                  	
+LPARENT   	(                   	
+IDENTIFIER	a                   	a
+RELOP     	<                   	<
+IDENTIFIER	b                   	b
+RPARENT   	)                   	
+OUTPUT_T  	output              	
+LPARENT   	(                   	
+IDENTIFIER	a                   	a
+RPARENT   	)                   	
+SEMICOLON 	;                   	
+ELSE_T    	else                	
+OUTPUT_T  	output              	
+LPARENT   	(                   	
+IDENTIFIER	b                   	b
+RPARENT   	)                   	
+SEMICOLON 	;                   	
+LCURLY    	{                   	
+LCURLY    	{                   	
+LCURLY    	{                   	
+LCURLY    	{                   	
+LCURLY    	{                   	
+LCURLY    	{                   	
+LCURLY    	{                   	
+RCURLY    	}                   	
+RCURLY    	}                   	
+RCURLY    	}                   	
+RCURLY    	}                   	
+RCURLY    	}                   	
+RCURLY    	}                   	
+NUMBER    	5123                	5123.000000
+NUMBER    	3427.7901           	3427.790100
+SWITCH_T  	switch              	
+LPARENT   	(                   	
+IDENTIFIER	hello               	hello
+RPARENT   	)                   	
+LCURLY    	{                   	
+CASE_T    	case                	
+COLON     	:                   	
+IDENTIFIER	myname              	myname
+SEMICOLON 	;                   	
+BREAK_T   	break               	
+SEMICOLON 	;                   	
+CASE_T    	case                	
+COLON     	:                   	
+IDENTIFIER	checkMe             	checkMe
+SEMICOLON 	;                   	
+IF_T      	if                  	
+LPARENT   	(                   	
+INPUT_T   	input               	
+RELOP     	==                  	==
+NOT_OP    	!                   	
+EQUALS    	=                   	
+OR_OP     	||                  	
+AND_OP    	&&                  	
+IDENTIFIER	ALL                 	ALL
+RPARENT   	)                   	
+LCURLY    	{                   	
+INPUT_T   	input               	
+OUTPUT_T  	output              	
+SEMICOLON 	;                   	
+SEMICOLON 	;                   	
+SEMICOLON 	;                   	
+SEMICOLON 	;                   	
+SEMICOLON 	;                   	
+RCURLY    	}                   	
+ELSE_T    	else                	
+WHILE_T   	while               	
+IDENTIFIER	do                  	do
+DEFAULT_T 	default             	
+COLON     	:                   	
+COLON     	:                   	
+COLON     	:                   	
+SEMICOLON 	;                   	
+LPARENT   	(                   	
+RPARENT   	)                   	
+LCURLY    	{                   	
+RCURLY    	}                   	
+IDENTIFIER	intfloat            	intfloat
+IDENTIFIER	in                  	in
+IDENTIFIER	t                   	t
+FLOAT_T   	float               	
+INT_T     	int                 	
+IDENTIFIER	floa                	floa
+WHILE_T   	while               	
+IDENTIFIER	t                   	t
+COMMA     	,                   	
+COLON     	:                   	
+SEMICOLON 	;                   	
+EQUALS    	=                   	
+RELOP     	==                  	==
+RELOP     	==                  	==
+EQUALS    	=                   	
+IDENTIFIER	a                   	a
+ADDOP     	+                   	+
+ADDOP     	-                   	-
+EQUALS    	=                   	
+ADDOP     	-                   	-
+ADDOP     	+                   	+
+ADDOP     	-                   	-
+ADDOP     	+                   	+
+RELOP     	>=                  	>=
+EQUALS    	=                   	
+EQUALS    	=                   	
+RELOP     	>                   	>
+RELOP     	>=                  	>=
+RELOP     	>                   	>
+RELOP     	>=                  	>=
+RELOP     	>                   	>
+RELOP     	<                   	<
+RELOP     	<=                  	<=
+RELOP     	<                   	<
+RELOP     	<=                  	<=
+RELOP     	<                   	<
+EQUALS    	=                   	
+RELOP     	>                   	>
+RELOP     	>                   	>
+EQUALS    	=                   	
+RELOP     	>                   	>
+RELOP     	<=                  	<=
+RELOP     	==                  	==
+NOT_OP    	!                   	
+EQUALS    	=                   	
+NOT_OP    	!                   	
+EQUALS    	=                   	
+NOT_OP    	!                   	
+NOT_OP    	!                   	
+AND_OP    	&&                  	
+AND_OP    	&&                  	
+CAST_OP   	static_cast<int>    	int
+CAST_OP   	static_cast<float>  	float
+IDENTIFIER	static              	static
+IDENTIFIER	cast                	cast
+IDENTIFIER	static              	static
+IDENTIFIER	cast                	cast
+RELOP     	<                   	<
+FLOAT_T   	float               	
+RELOP     	>                   	>
+IDENTIFIER	STATIC              	STATIC
+IDENTIFIER	CAST                	CAST
+RELOP     	<                   	<
+INT_T     	int                 	
+RELOP     	>                   	>
+RCURLY    	}                   	
+IDENTIFIER	Hello               	Hello
+COMMA     	,                   	
+IDENTIFIER	World               	World
+NOT_OP    	!                   	
+AND_OP    	&&                  	
+OR_OP     	||                  	
+LCURLY    	{                   	
+LPARENT   	(                   	
+RPARENT   	)                   	
+RCURLY    	}                   	
+Aviv Naaman
