@@ -158,36 +158,70 @@ static_cast\<(int|float)\> {
 
 %%
 
-int main(int argc, char* argv[]) {
-    // parse args - open input file and eit if missing or problematic.
+void parse_args(int argc, char *argv[]) {
     if (argc > 1) {
         if (!(yyin = fopen(argv[1], "r"))) {
             fprintf(ERR_OUTPUT_FILE, "Failed to open file '%s'! Aborting.\n", argv[1]);
             exit(1);
         }
+
         // add .out to original file name to get output file name:
         int firstarg_len = strlen(argv[1]);
-        char *output_file_name = (char *)malloc(firstarg_len + 5);
+        char *last_dot = strrchr(argv[1], '.');
+        char *output_file_name = (char *)malloc((last_dot-argv[1]) + 3);
+        // copy until before '.'
+        *last_dot = 0;
         strcpy(output_file_name, argv[1]);
-        strcpy(output_file_name + firstarg_len, ".out");
+        // copy '.tok' afterwards
+        strcpy(output_file_name+(last_dot-argv[1]), ".tok");
         // open output file as stdout.
         if (!(stdout = fopen(output_file_name, "wt"))) {
             fprintf(ERR_OUTPUT_FILE, "Failed to open output file %s! Aborting.\n", output_file_name);
+            exit(1);
         }
+        // release allocated memory
         free(output_file_name);
     }
     else {
         fprintf(ERR_OUTPUT_FILE, "Missing file argument! Usage: %s filename\n", argv[0]);
         exit(1);
     }
-    
+}
+
+void print_token_attr(token_type ttype) {
+    switch (ttype) {
+        case CAST_OP:
+            printf("%s", current_attr.cast_dest);
+            break;
+        case NUMBER:
+            printf("%f", current_attr.number_value);
+            break;
+        case IDENTIFIER:
+            printf("%s", current_attr.str_val);
+            break;
+        case RELOP:
+            printf("%c", current_attr.relop[0]);
+            // print 2nd char if not zero
+            if (current_attr.relop[1]) printf("%c", current_attr.relop[1]);
+            break;
+        case ADDOP:
+        case MULOP:
+            printf("%c", current_attr.relop[0]);
+            break;
+    }
+}
+
+int main(int argc, char* argv[]) {
+    // parse args - open input file and eit if missing or problematic.
+    parse_args(argc, argv);
+
     // Table Header
     printf("%-"TABLE_TOKEN_C_W"s\t%-"TABLE_LEXEME_C_W"s\t%-"TABLE_ATTRIBUTE_C_W"s\n", "TOKEN", "LEXEME", "ATTRIBUTE");
 
     // Tokenize & print
     int token_type = 0;
     while (token_type = yylex()) {
-        // error
+        // Print Error
         if (token_type == ERROR) {
             fprintf(ERR_OUTPUT_FILE, "Unrecognized token '%c' (%d) @ line %d!\n", *yytext, *yytext, yylineno);
             continue;
@@ -195,34 +229,14 @@ int main(int argc, char* argv[]) {
 
         printf("%-"TABLE_TOKEN_C_W"s\t%-"TABLE_LEXEME_C_W"s\t", token_names[token_type], yytext);
 
-        switch (token_type) {
-            case CAST_OP:
-                printf("%s", current_attr.cast_dest);
-                break;
-            case NUMBER:
-                printf("%f", current_attr.number_value);
-                break;
-            case IDENTIFIER:
-                printf("%s", current_attr.str_val);
-                break;
-            case RELOP:
-                printf("%c", current_attr.relop[0]);
-                // print 2nd char if not zero
-                if (current_attr.relop[1]) printf("%c", current_attr.relop[1]);
-                break;
-            case ADDOP:
-            case MULOP:
-                printf("%c", current_attr.relop[0]);
-                break;
-            default:
-                break;
-        }
+        print_token_attr(token_type);
 
         putchar('\n');
     }
 
-    // final line
+    // final line - stderr
     fputs("Aviv Naaman\n", stderr);
+    // final line - output file
     puts("Aviv Naaman");
 
     // close output file.
