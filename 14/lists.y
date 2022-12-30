@@ -2,10 +2,22 @@
 %}
 
 /* Reserved words */
-%token ...
+%token tail cons greater sum max number
 
 %%
-variable:    stuff;
+s:    item;
+
+l: '[' itemlist ']' |
+    tail '(' l ')' |
+    cons '(' item ',' l ')' |
+    greater '(' item ',' l ')';
+
+itemlist: itemlist item |
+    %empty;
+
+item: sum '(' l ')' |
+    max '(' l ')' |
+    number;
 
 %%
 
