@@ -18,11 +18,13 @@ typedef struct node {
 /// @brief a node is also a list.
 typedef struct list { node *head; } list;
 
-void append_list(list *data, LIST_DTYPE value);
+list *append_list(list *data, LIST_DTYPE value);
 
-void insert_list(list *data, LIST_DTYPE value, size_t indx);
+list *insert_list(list *data, LIST_DTYPE value, size_t indx);
 
 list *alloc_list();
+
+list *copy_list(list *data);
 
 list *tail_list(list *data);
 
@@ -31,5 +33,7 @@ list *greater_list(list *data, LIST_DTYPE value);
 LIST_DTYPE sum_list(list *data);
 
 LIST_DTYPE max_list(list *data);
+
+LIST_DTYPE min_list(list *data);
 
 void free_list(list *data);
