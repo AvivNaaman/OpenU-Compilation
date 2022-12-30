@@ -1,5 +1,19 @@
-MIN( 
-    CONS(70,
-        [ 4,2,3,1 ]
-    ) 
+SUM(
+    [
+    MIN(GREATER (3, 
+        [ 3,5 ]
+    )),
+
+    MIN(GREATER (2, 
+        TAIL(
+            [ 5,3 ]
+        ) 
+    )),
+
+    MAX(GREATER (2, 
+        CONS(70,
+            [ 4,2,3,1 ]
+        ) 
+    ))
+    ]
 )
