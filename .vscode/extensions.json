@@ -1,3 +1,11 @@
 {
-    "recommendations": ["daohong-emilio.yash", "ms-vscode.makefile-tools"]
+    "recommendations": [
+        // bison
+        "daohong-emilio.yash",
+        // c/c++, makefile
+        "ms-vscode.makefile-tools",
+        "ms-vscode.cpptools-extension-pack",
+        // flex
+        "luniclynx.lex"
+    ]
 }
