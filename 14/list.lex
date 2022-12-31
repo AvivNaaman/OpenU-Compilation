@@ -1,5 +1,5 @@
 %{
-#include "lists.tab.h"
+#include "list.tab.h"
 %}
 
 %option noyywrap

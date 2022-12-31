@@ -1,5 +1,5 @@
 /*
-This file contains utilities for manging lists.
+This file contains utilities for manging list.
 Every ptr of list is a deep copy of the previous one.
 */
 

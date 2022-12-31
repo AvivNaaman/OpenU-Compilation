@@ -2,7 +2,7 @@ LEXER_GEN=flex
 PARSER_GEN=bison
 CC=gcc
 
-all: lists
+all: list
 
 # Compile all bison parsers with respective output prefixes
 %.tab.c %.tab.h: %.y

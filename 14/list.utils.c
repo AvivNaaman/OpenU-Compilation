@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <limits.h>
-#include "lists.utils.h"
+#include "list.utils.h"
 
 void print_list(list *data)
 {

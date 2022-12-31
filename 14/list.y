@@ -8,7 +8,7 @@
 }
 
 %code requires {
-    #include "lists.utils.h"
+    #include "list.utils.h"
 }
 
 %union {
