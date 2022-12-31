@@ -8,11 +8,10 @@
 
     For each lex file (e.g. q1.lex), you have to compile in 2 stages:
 
-    1. execute: `flex q1.lex`
-    2. execute: `gcc -o q1 lex.yy.c`
+    1. execute: `bison --file-prefix="cpl" -v cpl.y`
 
 
-You'l find the executables in the current directory, with the respecitve name.
+You'l find the *.output file and *.tab.c files in the current directory.
 
 #### Note: This is a partial exercise, and it wasn't commited.
 I didn't have enough time, effort and need to solve all the questions, so I decided to give up on that one.

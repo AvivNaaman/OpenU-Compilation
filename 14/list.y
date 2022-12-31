@@ -25,6 +25,11 @@
 
 %define parse.error verbose
 
+// We allocate a new list each and every time we assign it.
+// To prevent memory leaks, this is required.
+// Note: It only applied to <list_values> type - which is a list*!
+%destructor { free_list($$); } <list_values>
+
 %%
 
 s:    item { if ($1 > 0) printf("%d\n", $1); } ;

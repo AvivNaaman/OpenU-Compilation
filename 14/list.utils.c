@@ -1,3 +1,10 @@
+/**
+ * @file list.utils.c
+ * @brief Implements functions for list management.
+ * @author Aviv Naaman
+ * @date December 2022
+*/
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <limits.h>
@@ -20,6 +27,13 @@ void print_list(list *data)
     puts("");
 }
 
+/**
+ * @brief Allocates a memory block of size bytes, and returns a pointer to it.
+ * Throws the program on failure with a message to stderr.
+ * 
+ * @param bytes The number of bytes to allocate.
+ * @return void* The allocated block.
+ */
 void *malloc_safe(size_t bytes)
 {
     void *result;
@@ -38,6 +52,12 @@ list *alloc_list()
     return result;
 }
 
+/**
+ * @brief Appends a value to an existing list, without deep-copying it.
+ * 
+ * @param data The list to append into
+ * @param value The value to append.
+ */
 void append_list_no_copy(list *data, LIST_DTYPE value)
 {
     if (data->head == NULL)
@@ -200,5 +220,10 @@ list *item_list(LIST_DTYPE item_val)
 
 void free_list(list *data)
 {
+    while (data->head) {
+        node *to_free = data->head;
+        data->head = to_free->next;
+        free(to_free);
+    }
     free(data);
 }

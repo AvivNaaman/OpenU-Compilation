@@ -6,6 +6,8 @@
         "ms-vscode.makefile-tools",
         "ms-vscode.cpptools-extension-pack",
         // flex
-        "luniclynx.lex"
+        "luniclynx.lex",
+        // documentation
+        "cschlosser.doxdocgen"
     ]
 }
