@@ -33,18 +33,18 @@
 
 s:    item { if ($1 > 0) printf("%d\n", $1); } ;
 
-l: '[' itemlist ']' { $$ = copy_list($2); } |
-    TAIL '(' l ')' { $$ = tail_list($3); } |
-    CONS '(' item ',' l ')' {$$ = insert_list($5, $3, 0);} |
-    GREATER '(' item ',' l ')' { $$ = greater_list($5, $3); } ;
+l: '[' itemlist ']' { $$ = copy_list($2); free_list($2); } |
+    TAIL '(' l ')' { $$ = tail_list($3); free_list($3); } |
+    CONS '(' item ',' l ')' {$$ = insert_list($5, $3, 0); free_list($5); } |
+    GREATER '(' item ',' l ')' { $$ = greater_list($5, $3); free_list($5); } ;
 
  /* Please note: I'm assuming the rules are itemlist-->itemlist,item|item!  */
-itemlist: itemlist ',' item { $$ = append_list($1, $3); } |
+itemlist: itemlist ',' item { $$ = append_list($1, $3); free_list($1); } |
     item { $$ = item_list($1); };
 
-item: SUM '(' l ')' { $$ = sum_list($3); } |
-    MAX '(' l ')' { $$ = max_list($3); } |
-    MIN '(' l ')' { $$ = min_list($3); } |
+item: SUM '(' l ')' { $$ = sum_list($3); free_list($l); } |
+    MAX '(' l ')' { $$ = max_list($3); free_list($l);} |
+    MIN '(' l ')' { $$ = min_list($3); free_list($l);} |
     NUMBER { $$ = yylval.item_val; };
 
 %%

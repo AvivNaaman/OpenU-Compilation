@@ -1,0 +1,115 @@
+==18187== Memcheck, a memory error detector
+==18187== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==18187== Using Valgrind-3.18.1-42b08ed5bd-20211015 and LibVEX; rerun with -h for copyright info
+==18187== Command: ./list list.txt
+==18187== Parent PID: 18186
+==18187== 
+--18187-- 
+--18187-- Valgrind options:
+--18187--    --leak-check=full
+--18187--    --show-leak-kinds=all
+--18187--    --track-origins=yes
+--18187--    --verbose
+--18187--    --log-file=valgrind.log
+--18187-- Contents of /proc/version:
+--18187--   Linux version 5.15.49-linuxkit (root@buildkitsandbox) (gcc (Alpine 10.2.1_pre1) 10.2.1 20201203, GNU ld (GNU Binutils) 2.35.2) #1 SMP PREEMPT Tue Sep 13 07:51:32 UTC 2022
+--18187-- 
+--18187-- Arch and hwcaps: ARM64, LittleEndian, v8-fhm-dpbcvadp-sha3-rdm-atomics-fp16-vfp16
+--18187-- Page sizes: currently 4096, max supported 65536
+--18187-- Valgrind library directory: /usr/libexec/valgrind
+--18187-- Reading syms from /compilers/14/list
+--18187-- Reading syms from /usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1
+--18187--   Considering /usr/lib/debug/.build-id/9a/9c6aeba5df4178de168e26fe30ddcdab47d374.debug ..
+--18187--   .. build-id is valid
+--18187-- Reading syms from /usr/libexec/valgrind/memcheck-arm64-linux
+--18187--    object doesn't have a symbol table
+--18187--    object doesn't have a dynamic symbol table
+--18187-- Scheduler: using generic scheduler lock implementation.
+--18187-- Reading suppressions file: /usr/libexec/valgrind/default.supp
+==18187== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-18187-by-???-on-deef619ccd62
+==18187== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-18187-by-???-on-deef619ccd62
+==18187== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-18187-by-???-on-deef619ccd62
+==18187== 
+==18187== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==18187== don't want to do, unless you know exactly what you're doing,
+==18187== or are doing some strange experiment):
+==18187==   /usr/bin/vgdb --pid=18187 ...command...
+==18187== 
+==18187== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==18187==   /path/to/gdb ./list
+==18187== and then give GDB the following command
+==18187==   target remote | /usr/bin/vgdb --pid=18187
+==18187== --pid is optional if only one valgrind process is running
+==18187== 
+--18187-- REDIR: 0x401ee00 (ld-linux-aarch64.so.1:strlen) redirected to 0x580b918c (???)
+--18187-- REDIR: 0x401de00 (ld-linux-aarch64.so.1:strcmp) redirected to 0x580b91e0 (???)
+--18187-- REDIR: 0x401dd40 (ld-linux-aarch64.so.1:index) redirected to 0x580b91b4 (???)
+--18187-- Reading syms from /usr/libexec/valgrind/vgpreload_core-arm64-linux.so
+--18187--    object doesn't have a symbol table
+--18187-- Reading syms from /usr/libexec/valgrind/vgpreload_memcheck-arm64-linux.so
+--18187--    object doesn't have a symbol table
+--18187-- Reading syms from /usr/lib/aarch64-linux-gnu/libc.so.6
+--18187--   Considering /usr/lib/debug/.build-id/f3/7f3aa07c797e333fd106472898d361f71798f5.debug ..
+--18187--   .. build-id is valid
+==18187== WARNING: new redirection conflicts with existing -- ignoring it
+--18187--     old: 0x0491e340 (memalign            ) R-> (1011.0) 0x0486a540 memalign
+--18187--     new: 0x0491e340 (memalign            ) R-> (1017.0) 0x0486a520 aligned_alloc
+==18187== WARNING: new redirection conflicts with existing -- ignoring it
+--18187--     old: 0x0491e340 (memalign            ) R-> (1011.0) 0x0486a540 memalign
+--18187--     new: 0x0491e340 (memalign            ) R-> (1017.0) 0x0486a500 aligned_alloc
+--18187-- REDIR: 0x4921620 (libc.so.6:memchr) redirected to 0x4840710 (_vgnU_ifunc_wrapper)
+--18187-- REDIR: 0x4920650 (libc.so.6:strlen) redirected to 0x4840710 (_vgnU_ifunc_wrapper)
+--18187-- REDIR: 0x4921f70 (libc.so.6:memcpy) redirected to 0x4840710 (_vgnU_ifunc_wrapper)
+--18187-- REDIR: 0x4921990 (libc.so.6:memset) redirected to 0x4840710 (_vgnU_ifunc_wrapper)
+--18187-- REDIR: 0x4920a40 (libc.so.6:rindex) redirected to 0x486ac40 (rindex)
+--18187-- REDIR: 0x491d640 (libc.so.6:malloc) redirected to 0x4864fe0 (malloc)
+--18187-- REDIR: 0x4921240 (libc.so.6:strstr) redirected to 0x4870160 (strstr)
+--18187-- REDIR: 0x4928fc0 (libc.so.6:__GI_memset) redirected to 0x486ee50 (memset)
+--18187-- REDIR: 0x491dbd4 (libc.so.6:free) redirected to 0x4867a60 (free)
+--18187-- REDIR: 0x4923700 (libc.so.6:strchrnul) redirected to 0x486f914 (strchrnul)
+--18187-- REDIR: 0x4927b40 (libc.so.6:__GI_memcpy) redirected to 0x486cf00 (__GI_memcpy)
+==18187== 
+==18187== HEAP SUMMARY:
+==18187==     in use at exit: 16,930 bytes in 4 blocks
+==18187==   total heap usage: 72 allocs, 68 frees, 22,946 bytes allocated
+==18187== 
+==18187== Searching for pointers to 4 not-freed blocks
+==18187== Checked 98,984 bytes
+==18187== 
+==18187== 8 bytes in 1 blocks are still reachable in loss record 1 of 4
+==18187==    at 0x4865058: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-arm64-linux.so)
+==18187==    by 0x10CDBB: yyalloc (list.yy.c:1853)
+==18187==    by 0x10C7AF: yyensure_buffer_stack (list.yy.c:1548)
+==18187==    by 0x10A713: yylex (list.yy.c:702)
+==18187==    by 0x109B1B: yyparse (list.tab.c:1286)
+==18187==    by 0x10A61B: main (list.y:66)
+==18187== 
+==18187== 64 bytes in 1 blocks are still reachable in loss record 2 of 4
+==18187==    at 0x4865058: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-arm64-linux.so)
+==18187==    by 0x10CDBB: yyalloc (list.yy.c:1853)
+==18187==    by 0x10C1C3: yy_create_buffer (list.yy.c:1388)
+==18187==    by 0x10A74B: yylex (list.yy.c:704)
+==18187==    by 0x109B1B: yyparse (list.tab.c:1286)
+==18187==    by 0x10A61B: main (list.y:66)
+==18187== 
+==18187== 472 bytes in 1 blocks are still reachable in loss record 3 of 4
+==18187==    at 0x4865058: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-arm64-linux.so)
+==18187==    by 0x48F9327: __fopen_internal (iofopen.c:65)
+==18187==    by 0x10A5BF: main (list.y:60)
+==18187== 
+==18187== 16,386 bytes in 1 blocks are still reachable in loss record 4 of 4
+==18187==    at 0x4865058: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-arm64-linux.so)
+==18187==    by 0x10CDBB: yyalloc (list.yy.c:1853)
+==18187==    by 0x10C1FF: yy_create_buffer (list.yy.c:1397)
+==18187==    by 0x10A74B: yylex (list.yy.c:704)
+==18187==    by 0x109B1B: yyparse (list.tab.c:1286)
+==18187==    by 0x10A61B: main (list.y:66)
+==18187== 
+==18187== LEAK SUMMARY:
+==18187==    definitely lost: 0 bytes in 0 blocks
+==18187==    indirectly lost: 0 bytes in 0 blocks
+==18187==      possibly lost: 0 bytes in 0 blocks
+==18187==    still reachable: 16,930 bytes in 4 blocks
+==18187==         suppressed: 0 bytes in 0 blocks
+==18187== 
+==18187== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
