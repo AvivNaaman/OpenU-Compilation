@@ -1,13 +1,6 @@
 %{
-#include "list.tab.h"
-%}
-
-%option noyywrap
-%option yylineno
-
-
-%{
 #include "cpl.tab.h"
+#define STATIC_FIELD_MEMCPY_ALL(FIELD) memcpy(FIELD, yytext, sizeof(FIELD))
 %}
 
 %option noyywrap
@@ -47,16 +40,16 @@ while { return WHILE; }
 
  /* Operators */
 (=[!=])|([<>]=?) { 
-    current_attr.relop[1] = '\0';
-    STATIC_FIELD_MEMCPY_ALL(current_attr.relop);
+    yylval.relop[1] = '\0';
+    STATIC_FIELD_MEMCPY_ALL(yylval.relop);
     return RELOP;
 }
 [+-] { 
-    STATIC_FIELD_MEMCPY_ALL(current_attr.single_op);
+    STATIC_FIELD_MEMCPY_ALL(yylval.single_op);
     return ADDOP;
 }
 [*/] { 
-    STATIC_FIELD_MEMCPY_ALL(current_attr.single_op);
+    STATIC_FIELD_MEMCPY_ALL(yylval.single_op);
     return MULOP; 
 }
 \|\| { return OR; }
@@ -66,33 +59,34 @@ while { return WHILE; }
  /* This would only copy the dest argument type. */ 
 static_cast\<(int|float)\> { 
     int chars_to_copy = strlen(yytext)-13;
-    memcpy(current_attr.cast_dest, yytext+12, chars_to_copy);
-    current_attr.cast_dest[chars_to_copy] = '\0';
+    memcpy(yylval.cast_dest, yytext+12, chars_to_copy);
+    yylval.cast_dest[chars_to_copy] = '\0';
     return CAST;
 }
 
  /* Additionals */
 [A-Za-z][A-Za-z0-9]* { 
     // just copy the identifier as is.
-    strcpy(current_attr.str_val, yytext);
+    yylval.identifier = malloc(strlen(yytext)+1);
+    strcpy(yylval.identifier, yytext);
     return ID;
 }
 
 [0-9]+(\.[0-9]*)? { 
     // parse to float and assign.
-    current_attr.number_value = atof(yytext);
+    yylval.number = atof(yytext);
     return NUM;
 }
 
  /* C-Style comments, will be ignored completly. */
-"/*"            { BEGIN(C_COMMENT); return COMMENT; }
-<C_COMMENT>"*/" { BEGIN(INITIAL); return COMMENT; }
-<C_COMMENT>[\n.]   { return COMMENT; }
+"/*"            { BEGIN(C_COMMENT); }
+<C_COMMENT>"*/" { BEGIN(INITIAL); }
+<C_COMMENT>[\n.]   { }
 
  /* Skip whitespaces and new lines */
 [\r\t\n ] { }
 
  /* Skip others */
-. { return ERROR; }
+. { fprintf(stderr, "Unexpected token %d:%s", yylineno, yytext); }
 
 %%

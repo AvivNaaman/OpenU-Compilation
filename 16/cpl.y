@@ -1,7 +1,18 @@
+%code {
+    #include <stdio.h>
+    extern int yylex(void);
+    void yyerror (const char *s) {
+        fprintf(stderr, "%s\n", s); 
+    }
+}
 
-
-%{
-%}
+%union {
+    float number;
+    char *identifier;
+    char single_op[1];
+    char relop[2];
+    char cast_dest[6];
+}
 
 /* Reserved words */
 %token BREAK CASE DEFAULT ELSE FLOAT IF INPUT INT OUTPUT SWITCH WHILE

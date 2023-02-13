@@ -1,9 +1,5 @@
 #include <stdio.h>
 #include "cpl.tab.h"
-extern int yylex(void);
-void yyerror (const char *s) {
-    fprintf(stderr, "%s\n", s); 
-}
 
 int main(int argc, char *argv[]) {
     extern FILE *yyin;
