@@ -13,11 +13,16 @@ all: cpl
 	$(LEXER_GEN) -o $@ $^
 
 # object files
-%.o: %.c 
+%.o: %.c
 	$(CC) -g -c $^ -o $@
 
-%: %.tab.o %.yy.o %.utils.o
+%.o: %.cpp
+	$(CC) -g -c $^ -o $@
+
+%: cpl.o main.o comiler.o cpl.tab.o
 	$(CC) -g $^ -o $@
+
+headers: cpl.tab.h
 
 
 clean:

@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  compilers:
+    container_name: compilers
+    build: .
+    command: bash
+    tty: true
+    working_dir: /compilers
+    volumes:
+      - /Users/avivnaaman/compilers:/compilers
