@@ -45,6 +45,9 @@
         "streambuf": "cpp",
         "cinttypes": "cpp",
         "typeinfo": "cpp",
-        "map": "cpp"
+        "map": "cpp",
+        "code.h": "c",
+        "list.h": "c",
+        "stdlib.h": "c"
     }
 }

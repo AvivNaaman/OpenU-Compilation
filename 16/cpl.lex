@@ -22,8 +22,8 @@ default { return DEFAULT; }
 else { return ELSE; }
 float { return FLOAT; }
 if { return IF; }
-input { return INPUT; }
-int { return INT; }
+input { yylval.dtype = CPL_DTYPE_FLOAT; return INPUT; }
+int { yylval.dtype = CPL_DTYPE_INT; return INT; }
 output { return OUTPUT; }
 switch { return SWITCH; }
 while { return WHILE; }
@@ -58,9 +58,7 @@ while { return WHILE; }
 
  /* This would only copy the dest argument type. */ 
 static_cast\<(int|float)\> { 
-    int chars_to_copy = strlen(yytext)-13;
-    memcpy(yylval.cast_dest, yytext+12, chars_to_copy);
-    yylval.cast_dest[chars_to_copy] = '\0';
+    yylval.cast_dest[chars_to_copy] = yytext[12] == "i" ? CPL_DTYPE_INT : CPL_DTYPE_FLOAT;
     return CAST;
 }
 
