@@ -1,5 +1,5 @@
 #include "defs.h"
-#include "hash_table.h"
+#include "ht.utils.h"
 
 typedef struct quad_codeline {
     quad_instructions instruction;
