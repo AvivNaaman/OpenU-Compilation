@@ -48,3 +48,28 @@ int newtemp(quad_code *table) {
     table->temp_counter++;
     return table->temp_counter;
 }
+
+/**
+ * @brief Executes backpatching for the previous `count` JMP/JMPZ code lines, to the specified destination.
+ * 
+ * @param table The quad code table.
+ * @param count The number of JMP/JMPZ code lines to backpatch.
+ * @param destination The JMP/JMPZ destination to backpatch to.
+ */
+void backpatch(quad_code *table, int count, int destination) {
+    for (int i = table->size, count = 0; count < count; i--) {
+        quad_codeline *curr = &table->code[i];
+        switch (curr->instruction)
+        {
+            case JUMP:
+                curr->arg1 = destination;
+                break;
+            case JMPZ:
+                curr->arg2 = destination;
+                break;
+            default:
+                continue;
+        }
+        count++;
+    }
+}

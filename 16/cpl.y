@@ -101,10 +101,11 @@ output_stmt:  OUTPUT '(' expression ')' ';' {
 if_stmt:    IF '(' boolexpr ')' {
     gen_2arg(code, JMPZ, $3.target, 0); // that will get backpatched later.
 } stmt {
+    backpatch(code, $$.begin_addr, next_addr(code));
     // TODO: Backpatch JMPZ to point here.
     gen_1arg(code, JMP, 0); // that will get backpatched later.
 } ELSE stmt {
-    // TODO: Backpatch JMP to point here.
+    backpatch(code, $$.begin_addr, next_addr(code));
 };
 
 while_stmt:  WHILE '(' boolexpr ')' {
@@ -113,26 +114,13 @@ while_stmt:  WHILE '(' boolexpr ')' {
 }
  stmt {
     gen_1arg(code, JMP, $$.begin_addr); 
-    // TODO: Backpatch JMPZ to point here.
+    backpatch(code, $$.begin_addr, next_addr(code));
  };
 
- /* source is expression target. target is whether fell to a case */
-switch_stmt:    SWITCH '(' expression ')' '{' {$6.source = $3.source; $6.target = newtemp();} caselist {
-    // jump to end of switch if $6.target's value is 1.
-    gen_3arg(code, IEQL, $6.target, $6.target, 1);
-    gen_2arg(code, JMPZ, $6.target, 0); // that will get backpatched later.
- } DEFAULT ':' stmtlist '}' {
-    // TODO: Backpatch JMPZ to point here.
- };
+ /* To allow usage of break; we'd have to store a counter of these to backpatch later */
+switch_stmt:    SWITCH '(' expression ')' '{' caselist DEFAULT ':' stmtlist '}';
 
-caselist: {$1.source = $$.source;}  caselist {
-    // check if NUM equals source. fall if so, check next if not.
-    int compare_target = newtemp();
-    gen_3arg(code, IEQL, compare_target, $1.source, $3);
-    gen_2arg(code, JMPZ, compare_target, 0); // that will get backpatched later.
-} CASE NUM ':' stmtlist {
-    // TODO: Backpatch JMPZ to point here.
-}
+caselist:  caselist  CASE NUM ':' stmtlist 
             | %empty;
 
 break_stmt:  BREAK ';';
