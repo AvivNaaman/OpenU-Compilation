@@ -51,7 +51,8 @@ int newtemp(quad_code *table) {
 
 /**
  * @brief Executes backpatching for the previous `count` JMP/JMPZ code lines, to the specified destination.
- * 
+ * The backpatching is done in reverse order, so the first JMP/JMPZ code line is the last one in the table.
+ * It skips instructions containing non-default jump destinations.
  * @param table The quad code table.
  * @param count The number of JMP/JMPZ code lines to backpatch.
  * @param destination The JMP/JMPZ destination to backpatch to.
@@ -62,9 +63,11 @@ void backpatch(quad_code *table, int count, int destination) {
         switch (curr->instruction)
         {
             case JUMP:
+                if (curr->arg1 <= 0) continue;
                 curr->arg1 = destination;
                 break;
             case JMPZ:
+                if (curr->arg2 <= 0) continue;
                 curr->arg2 = destination;
                 break;
             default:

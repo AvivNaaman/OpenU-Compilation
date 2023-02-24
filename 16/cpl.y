@@ -8,6 +8,7 @@
         fprintf(stderr, "%s\n", s); 
     }
     quad_code *code = new_code();
+    ht *symbols = ht_alloc();
 }
 
 %union {
@@ -25,6 +26,8 @@
         } payload;
         int begin_addr;
         int end_addr;
+        int breakcount;
+        bool in_while_or_switch;
     } var_value;
     list *idlist_vals;
 }
@@ -48,7 +51,7 @@
 %define parse.error verbose
 
 %%
-program:    declarations stmt_block;
+program:  declarations stmt_block;
 
 declarations:   declarations declaration
                 | %empty;
@@ -57,12 +60,12 @@ declaration:    idlist ':' type ';' {
     // add all the identifiers in the idlist to the symbol table
     for (node *head = $1->head; head != NULL; head = head->next) {
         // TODO: prevent aliasing!!! copy the type!!!
-        if (!ht_get($$.symbols, head->val)) {
+        if (!ht_get(symbols, head->val)) {
             // TODO: Better error message?
             fprintf(stderr, "Error: redeclaration of variable %s\n", head->val);
             continue;
         }
-        ht_set($$.symbols, head->val, $3);
+        ht_set(symbols, head->val, $3);
     }
     // list is no longer needed.
     free_list($1);
@@ -101,11 +104,12 @@ output_stmt:  OUTPUT '(' expression ')' ';' {
 if_stmt:    IF '(' boolexpr ')' {
     gen_2arg(code, JMPZ, $3.target, 0); // that will get backpatched later.
 } stmt {
-    backpatch(code, $$.begin_addr, next_addr(code));
-    // TODO: Backpatch JMPZ to point here.
-    gen_1arg(code, JMP, 0); // that will get backpatched later.
+    gen_1arg(code, JMP, 0);
+    // backpatch the JMPZ instruction to point here.
+    backpatch(code, 1, next_addr(code));
 } ELSE stmt {
-    backpatch(code, $$.begin_addr, next_addr(code));
+    // backpatch the JMP instruction to point next
+    backpatch(code, 1, next_addr(code));
 };
 
 while_stmt:  WHILE '(' boolexpr ')' {
