@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Dict, Iterable
 
 from consts import QuadInstructionFetcher, QuadInstructionType
@@ -5,11 +7,36 @@ from sly import Parser
 from lexer import CplLexer
 from consts import SupportedDtype
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+
+
+temp_counter: int = 0
+def next_temp() -> int:
+    global temp_counter
+    temp_counter += 1
+    return temp_counter
+
+@dataclass
+class TempVar:
+    var_id: int = field(default_factory=next_temp)
+
 @dataclass
 class CplDeclaration:
     identifiers: Iterable[str]
     dtype: SupportedDtype
+    
+@dataclass
+class Expression:
+    target: TempVar
+    
+@dataclass
+class NumericExpression(Expression):
+    dtype: SupportedDtype
+    
+    def combine(self, other: NumericExpression) -> NumericExpression:
+        return NumericExpression(TempVar(),
+            SupportedDtype.FLOAT if self.dtype == SupportedDtype.FLOAT or \
+                other.dtype == SupportedDtype.FLOAT else SupportedDtype.INT)
 
 class CplParser(Parser):
     tokens = CplLexer.tokens
@@ -80,7 +107,7 @@ class CplParser(Parser):
     
     @_('SWITCH "(" expression ")" "{" caselist DEFAULT ":" stmtlist "}"')
     def switch_stmt(self, p):
-        pass
+        expression_target: TempVar = p[2].target
     
     @_('caselist CASE NUM ":" stmtlist', "")
     def caselist(self, p):
@@ -91,25 +118,25 @@ class CplParser(Parser):
         pass
     
     @_("boolexpr OR boolterm", "boolterm")
-    def boolexpr(self, p):
+    def boolexpr(self, p) -> Expression:
         pass    
     
     @_('boolterm AND boolfactor', "boolfactor")
-    def boolterm(self, p):
+    def boolterm(self, p) -> Expression:
         pass
     
     @_('NOT "(" boolexpr ")"', "expression RELOP expression")
-    def boolfactor(self, p):
+    def boolfactor(self, p) -> Expression:
         pass
     
     @_('expression ADDOP term', 'term')
-    def expression(self, p):
+    def expression(self, p) -> NumericExpression:
         pass
     
     @_('term MULOP factor', 'factor')
-    def term(self, p):
+    def term(self, p) -> NumericExpression:
         pass
     
     @_('"(" expression ")"', 'CAST "(" expression ")"', 'ID', 'NUM')
-    def factor(self, p):
+    def factor(self, p) -> NumericExpression:
         pass
