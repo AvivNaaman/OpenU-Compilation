@@ -1,5 +1,4 @@
 # Ignore all in subfolder
-*/*
 
 # except those with extension
 !*/*.*
