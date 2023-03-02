@@ -54,17 +54,50 @@ class QuadInstruction(Enum):
 
 class QuadInstructionFetcher:
     _arg_map: Dict[QuadInstructionType, Dict[SupportedDtype, QuadInstruction]] = {
-        QuadInstructionType.ASN: {SupportedDtype.INT: QuadInstruction.IASN, SupportedDtype.FLOAT: QuadInstruction.RASN},
-        QuadInstructionType.PRT: {SupportedDtype.INT: QuadInstruction.IPRT, SupportedDtype.FLOAT: QuadInstruction.RPRT},
-        QuadInstructionType.INP: {SupportedDtype.INT: QuadInstruction.IINP, SupportedDtype.FLOAT: QuadInstruction.RINP},
-        QuadInstructionType.EQL: {SupportedDtype.INT: QuadInstruction.IEQL, SupportedDtype.FLOAT: QuadInstruction.REQL},
-        QuadInstructionType.NQL: {SupportedDtype.INT: QuadInstruction.INQL, SupportedDtype.FLOAT: QuadInstruction.RNQL},
-        QuadInstructionType.LSS: {SupportedDtype.INT: QuadInstruction.ILSS, SupportedDtype.FLOAT: QuadInstruction.RLSS},
-        QuadInstructionType.GRT: {SupportedDtype.INT: QuadInstruction.IGRT, SupportedDtype.FLOAT: QuadInstruction.RGRT},
-        QuadInstructionType.ADD: {SupportedDtype.INT: QuadInstruction.IADD, SupportedDtype.FLOAT: QuadInstruction.RADD},
-        QuadInstructionType.SUB: {SupportedDtype.INT: QuadInstruction.ISUB, SupportedDtype.FLOAT: QuadInstruction.RSUB},
-        QuadInstructionType.MLT: {SupportedDtype.INT: QuadInstruction.IMLT, SupportedDtype.FLOAT: QuadInstruction.RMLT},
-        QuadInstructionType.DIV: {SupportedDtype.INT: QuadInstruction.IDIV, SupportedDtype.FLOAT: QuadInstruction.RDIV},
+        QuadInstructionType.ASN: {
+            SupportedDtype.INT: QuadInstruction.IASN,
+            SupportedDtype.FLOAT: QuadInstruction.RASN
+        },
+        QuadInstructionType.PRT: {
+            SupportedDtype.INT: QuadInstruction.IPRT,
+            SupportedDtype.FLOAT: QuadInstruction.RPRT
+        },
+        QuadInstructionType.INP: {
+            SupportedDtype.INT: QuadInstruction.IINP,
+            SupportedDtype.FLOAT: QuadInstruction.RINP
+        },
+        QuadInstructionType.EQL: {
+            SupportedDtype.INT: QuadInstruction.IEQL,
+            SupportedDtype.FLOAT: QuadInstruction.REQL
+        },
+        QuadInstructionType.NQL: {
+            SupportedDtype.INT: QuadInstruction.INQL,
+            SupportedDtype.FLOAT: QuadInstruction.RNQL
+        },
+        QuadInstructionType.LSS: {
+            SupportedDtype.INT: QuadInstruction.ILSS,
+            SupportedDtype.FLOAT: QuadInstruction.RLSS
+        },
+        QuadInstructionType.GRT: {
+            SupportedDtype.INT: QuadInstruction.IGRT,
+            SupportedDtype.FLOAT: QuadInstruction.RGRT
+        },
+        QuadInstructionType.ADD: {
+            SupportedDtype.INT: QuadInstruction.IADD,
+            SupportedDtype.FLOAT: QuadInstruction.RADD
+        },
+        QuadInstructionType.SUB:  {
+            SupportedDtype.INT: QuadInstruction.ISUB,
+            SupportedDtype.FLOAT: QuadInstruction.RSUB
+        },
+        QuadInstructionType.MLT: {
+            SupportedDtype.INT: QuadInstruction.IMLT,
+            SupportedDtype.FLOAT: QuadInstruction.RMLT
+        },
+        QuadInstructionType.DIV: {
+            SupportedDtype.INT: QuadInstruction.IDIV,
+            SupportedDtype.FLOAT: QuadInstruction.RDIV
+        },
     }
     
     @staticmethod
