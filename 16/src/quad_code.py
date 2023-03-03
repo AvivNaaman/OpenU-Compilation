@@ -10,7 +10,14 @@ class QuadCode:
         self.symbols: Dict[str, Dtype] = {}
         self.temp_var_counter = 0
         self.label_counter = 0
-        
+        self.break_scopes_stack: List[str] = []
+        """ This property holds the stack of break (where to go) labels. """
+    
+    def add_symbol(self, name: str, dtype: Dtype) -> None:
+        if name in self.symbols:
+            raise Exception(f"Symbol {name} already exists")
+        self.symbols[name] = dtype
+    
     def emitlabel(self, label: str) -> str:
         self.labels[label] = self.code_lines
     
@@ -59,7 +66,7 @@ class QuadCode:
         # Generate the instructions.
         self.emit_op_dest(op,(temp, affective_type), arg1, arg2)
         return temp, affective_type
-    
+
     def emit_op_dest(self, op: QuadInstructionType,
                 dest_name: str,
                 *args: str) -> None:
@@ -77,7 +84,16 @@ class QuadCode:
         for i, (op, arg1, arg2, arg3) in enumerate(self.code):
             if arg1 in self.labels:
                 self.code[i] = (op, self.labels[arg1], arg2, arg3)
-    
+
+    def push_break_scope(self, label: str) -> None:
+        self.break_scopes_stack.append(label)
+
+    def pop_break_scope(self) -> str:
+        return self.break_scopes_stack.pop()
+
+    def peek_break_scope(self) -> str:
+        return self.break_scopes_stack[-1]
+
     def write(self, filename: str) -> None:
         self.apply_labels()
         with open(filename, 'w') as f:

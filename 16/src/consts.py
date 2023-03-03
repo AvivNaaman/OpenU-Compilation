@@ -1,5 +1,6 @@
+from __future__ import annotations
 from enum import Enum, auto
-from typing import Dict
+from typing import Dict, Tuple
 from typing import Self
 
 class Dtype(Enum):
@@ -41,7 +42,7 @@ class QuadInstruction(Enum):
     JMPZ = auto()
     HALT = auto()  
 
-class BinaryOp(Enum):
+class CplBinaryOp(Enum):
     ADD = 1
     SUB = auto()
     MLT = auto()
@@ -49,9 +50,30 @@ class BinaryOp(Enum):
     EQL = auto()
     NQL = auto()
     LSS = auto()
+    LSSEQ = auto()
     GRT = auto()
+    GRTEQ = auto()
+    
     AND = auto()
     OR = auto()
+    
+    def to_quad_op(self) -> Tuple[QuadInstructionType, bool]:
+        """
+        Converts the CplBinaryOp to the QuadInstructionType,
+        with an optional boolean value to indicate whether flipping the operand order is required. 
+        """
+        return {
+            self.ADD: (QuadInstructionType.ADD, False),
+            self.MLT: (QuadInstructionType.MLT, False),
+            self.DIV: (QuadInstructionType.DIV, False),
+            self.EQL: (QuadInstructionType.EQL, False),
+            self.NQL: (QuadInstructionType.NQL, False),
+            self.LSS: (QuadInstructionType.LSS, False),
+            self.GRT: (QuadInstructionType.GRT, False),
+            self.GRTEQ: (QuadInstructionType.LSS, True),
+            self.LSSEQ: (QuadInstructionType.GRT, True),
+        }[self]
+
 
 class QuadInstructionType(Enum):
     ASN = 1

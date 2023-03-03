@@ -1,14 +1,10 @@
 from __future__ import annotations
 from dataclasses import dataclass, fields
 import logging
-from typing import Iterable, List, Union
+from typing import Iterable, List, Union, Optional
 
-from consts import QuadInstruction
-
-from consts import QuadInstructionType
-
-from consts import Dtype, BinaryOp
-from .quad_code import QuadCode
+from consts import QuadInstruction, QuadInstructionType, Dtype, CplBinaryOp
+from quad_code import QuadCode
 
 @dataclass
 class AstNode:
@@ -23,6 +19,7 @@ class AstNode:
         This method is called right after the construction of an inheriting dataclass instance.
         It is used here to initialize the bound methods to a property visitation order.
         """
+        self._success = True
         self._bounds = {}
         for field in fields(self):
             self._bounds[field.name] = ([], [])
@@ -36,17 +33,29 @@ class AstNode:
                     self._bounds[prop][1].append(getattr(self, func))
         
         self._logger = logging.getLogger(self.__class__.__name__)
-
-    @staticmethod
-    def _visit_child(val):
+    
+    @property
+    def success(self) -> bool:
+        """ 
+        This property is used to check if the semantic analysis was successful.
+        It is set to False if any semantic error was found.
+        """
+        return self._success
+    
+    def _visit_child(self, val) -> bool:
         """
         Visits a child property of the node, by it's name.
         """
-        if isinstance(val, AstNode):
-                val.visit()
-        elif isinstance(val, Iterable) and not isinstance(val, str):
-            for element in val:
-                AstNode._visit_child(element)
+        try:
+            if isinstance(val, AstNode):
+                    val.visit()
+            elif isinstance(val, Iterable) and not isinstance(val, str):
+                for element in val:
+                    self._visit_child(element)
+        except Exception as e:
+            self._logger.error(f"Error while visiting {val}: {e}")
+            return False
+        return True
     
     def visit(self):
         """ 
@@ -60,8 +69,8 @@ class AstNode:
             for func in self._bounds[field.name][0]:
                 func()
 
-            self._visit_child(getattr(self, field.name))
-                
+            self._success &= self._visit_child(getattr(self, field.name))
+
             for func in self._bounds[field.name][1]:
                 func()
         self.after()
@@ -144,6 +153,7 @@ class WhileStmt(Stmt):
     def before(self):
         self.boolexp_label = code.newlabel()
         self.exit_label = code.newlabel()
+        code.push_break_scope(self.exit_label)
 
     bool_expr: BoolExpr
     
@@ -156,26 +166,49 @@ class WhileStmt(Stmt):
     def after(self):
         code.emit(QuadInstruction.JUMP, self.boolexp_label)
         code.emitlabel(self.exit_label)
+        code.pop_break_scope()
     
 @dataclass
 class Case(AstNode):
     number: Number
     stmts: StmtList
-    
+
     cmp_source: Identifier = None
-    
+
     def before(self):
-        code.emit_op_temp(QuadInstructionType.EQL, self.number, self.cmp_source)
+        self._end_label = code.newlabel()
+        tmpname, _ = code.emit_op_temp(QuadInstructionType.EQL, self.number, self.cmp_source)
+        code.emit(QuadInstruction.JMPZ, tmpname, self._end_label)
+
+    def after(self):
+        code.emitlabel(self._end_label)
 
 @dataclass
 class SwitchStmt(Stmt):
+    def before(self):
+        code.push_break_scope()
+
     expr: Expression
+
+    @AstNode.before_visit('cases')
+    def before_cases(self):
+        # Each case should know where to compare from!
+        for c in self.cases:
+            c.cmp_source = self.expr.val
+
     cases: List[Case]
     default: StmtList
-    
+
+    def after(self):
+        code.pop_break_scope()
+
 @dataclass
 class BreakStmt(Stmt):
-    pass
+    def after(self):
+        try:
+            code.emit(QuadInstruction.JUMP, code.peek_break_scope())
+        except IndexError:
+            raise ValueError("Break statement outside of loop or switch-case.")
 
 @dataclass
 class StmtList(AstNode):
@@ -185,9 +218,25 @@ class StmtList(AstNode):
 class BinaryOpExpression(AstNode):
     left: Expression
     right: Expression
-    op: Identifier
+    op: CplBinaryOp
     
-    target: Identifier = None
+    target: Optional[Expression] = None
+    
+    def after(self):
+        try:
+            # Basic supported ops - are just compiled right away
+            op, flip = self.op.to_quad_op()
+            l, r = self.right.val, self.left.val if flip else self.left.val, self.right.val
+            res, restype = code.emit_op_temp(op, self.target, l, r)
+            self.target = Expression(res, restype)
+        except:
+            if self.op not in (CplBinaryOp.AND, CplBinaryOp.OR):
+                raise ValueError(f"Unsupported binary op: {self.op}")
+            # AND, OR are special cases. They're actually like checking out the Addition result.
+            add_res, _ = code.emit_op_temp(QuadInstructionType.ADD, self.target, self.left.val)
+            greater_thresh = 1 if self.op == CplBinaryOp.AND else 0
+            res, restype = code.emit_op_temp(QuadInstructionType.GRT, self.target, add_res, greater_thresh)
+            self.target = Expression(res, restype)
 
 
 @dataclass
@@ -198,11 +247,17 @@ class BoolExpr(AstNode):
 class OpBoolExpr(BoolExpr):
     left: BoolExpr
     right: BoolExpr
-    op: BinaryOp
+    op: CplBinaryOp
+
+    def after(self):
+        self.target = code.newtemp()
+        code.emit_op_dest(QuadInstructionType.ASN, self.target, (self.left.target, self.right.target))
 
 @dataclass
 class NotBoolExpr(BoolExpr):
     expr: BoolExpr
+    def after(self):
+        code.emit_op_temp(QuadInstructionType.NOT, self.expr.target)
 
 @dataclass
 class Declarations(AstNode):
@@ -212,11 +267,25 @@ class Declarations(AstNode):
 class Declaration(AstNode):
     idlist: List[Identifier]
     _type: Dtype
+    def after(self):
+        for id in self.idlist:
+            code.add_symbol(id, self._type)
 
 @dataclass
 class CastExpression(AstNode):
     arg: Expression
     _to_type: Dtype
+    
+    target: Optional[Expression] = None
+    def after(self):
+        if self.arg.dtype == self._to_type:
+            raise ValueError("Cannot cast to same type!")
+        tname, ttype = code.newtemp(self._to_type)
+        code.emit(QuadInstructionType.ITOR if \
+                    self._to_type == Dtype.INT else \
+                    QuadInstructionType.RTOI,
+                    tname, self.arg.val)
+        self.target = Expression(tname, ttype)
 
 @dataclass
 class Program(AstNode):

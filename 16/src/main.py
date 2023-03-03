@@ -1,8 +1,9 @@
 import logging
 from cpl_parser import CplParser
-from lexer import CplLexer
+from cpl_lexer import CplLexer
 from cpl_ast import Program
 from argparse import ArgumentParser
+
 if __name__ == '__main__':
     lexer = CplLexer()
     parser = CplParser()

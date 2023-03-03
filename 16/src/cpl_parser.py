@@ -4,7 +4,7 @@ from typing import List
 
 from cpl_ast import Stmt
 
-from consts import BinaryOp
+from consts import CplBinaryOp
 
 from sly import Parser
 from cpl_lexer import CplLexer
@@ -105,13 +105,13 @@ class CplParser(Parser):
     def boolexpr(self, p) -> Expression:
         if len(p) == 1:
             return p[0]
-        return OpBoolExpr(p[0], p[1], BinaryOp.OR)
+        return OpBoolExpr(p[0], p[1], CplBinaryOp.OR)
     
     @_('boolterm AND boolfactor', "boolfactor")
     def boolterm(self, p) -> Expression:
         if len(p) == 1:
             return p[0]
-        return OpBoolExpr(p[0], p[1], BinaryOp.AND)
+        return OpBoolExpr(p[0], p[1], CplBinaryOp.AND)
     
     @_('NOT "(" boolexpr ")"', "expression RELOP expression")
     def boolfactor(self, p) -> BoolExpr:
@@ -123,13 +123,13 @@ class CplParser(Parser):
     def expression(self, p):
         if len(p) == 1:
             return p[0]
-        return BinaryOpExpression(p[0], p[1], BinaryOp.ADD if p[1].value == '+' else BinaryOp.SUB)
+        return BinaryOpExpression(p[0], p[1], CplBinaryOp.ADD if p[1].value == '+' else CplBinaryOp.SUB)
     
     @_('term MULOP factor', 'factor')
     def term(self, p):
         if len(p) == 1:
             return p[0]
-        return BinaryOpExpression(p[0], p[1], BinaryOp.MLT if p[1].value == '*' else BinaryOp.DIV)
+        return BinaryOpExpression(p[0], p[1], CplBinaryOp.MLT if p[1].value == '*' else CplBinaryOp.DIV)
     
     @_('"(" expression ")"', 'CAST "(" expression ")"', 'ID', 'NUM')
     def factor(self, p):
