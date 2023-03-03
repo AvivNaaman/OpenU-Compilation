@@ -52,6 +52,18 @@ class QuadInstruction(Enum):
     JMPZ = auto()
     HALT = auto()  
 
+class BinaryOp(Enum):
+    ADD = 1
+    SUB = auto()
+    MLT = auto()
+    DIV = auto()
+    EQL = auto()
+    NQL = auto()
+    LSS = auto()
+    GRT = auto()
+    AND = auto()
+    OR = auto()
+
 class QuadInstructionFetcher:
     _arg_map: Dict[QuadInstructionType, Dict[SupportedDtype, QuadInstruction]] = {
         QuadInstructionType.ASN: {

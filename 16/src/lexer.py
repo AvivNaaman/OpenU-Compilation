@@ -1,6 +1,17 @@
+from __future__ import annotations
 from sly import Lexer
 
 class CplLexer(Lexer):
+
+    tokens = { ID, NUM, IF, ELSE, WHILE, BREAK,
+              SWITCH, CASE, DEFAULT, FLOAT, INT,
+              INPUT, OUTPUT, RELOP, ADDOP, MULOP, OR,
+              AND, NOT, CAST }
+    literals = { '=', ';', '(', ')', '{', '}', ',', ':' }
+    ignore = ' \t\n'
+    ignore_comment = r'/\*.*?\*/'
+    
+
     BREAK = r'break'
     CASE = r'case'
     DEFAULT = r'default'
@@ -27,18 +38,11 @@ class CplLexer(Lexer):
         t.value = t.value[14:-2].strip()
         return t
     
-    @_(r'\d+\(\.\d+)?)')
+    @_(r'\d+(\.\d+)?')
     def NUM(self, t):
         if '.' in t.value:
             t.value = float(t.value)
         else:
             t.value = int(t.value)
     
-    tokens = { ID, NUM, IF, ELSE, WHILE, BREAK,
-              SWITCH, CASE, DEFAULT, FLOAT, INT,
-              INPUT, OUTPUT, RELOP, ADDOP, MULOP, OR,
-              AND, NOT, CAST }
-    literals = { '=', ';', '(', ')', '{', '}', ',', ':' }
-    ignore = ' \t'
-    ignore_comment = r'/\*.*?\*/'
     
