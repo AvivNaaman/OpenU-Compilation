@@ -1,27 +1,16 @@
 from enum import Enum, auto
 from typing import Dict
+from typing import Self
 
-class SupportedDtype(Enum):
+class Dtype(Enum):
     INT = 1
     FLOAT = auto()
     
-class QuadInstructionType(Enum):
-    ASN = 1
-    PRT = auto()
-    INP = auto()
-    EQL = auto()
-    NQL = auto()
-    LSS = auto()
-    GRT = auto()
-    ADD = auto()
-    SUB = auto()
-    MLT = auto()
-    DIV = auto()    
-    ITOR = auto()
-    RTOI = auto()
-    JUMP = auto()
-    JMPZ = auto()
-    HALT = auto()
+    def affective_type(self, other: Self) -> Self:
+        if self == Dtype.FLOAT or other == Dtype.FLOAT:
+            return Dtype.FLOAT
+        return Dtype.INT
+    
 
 class QuadInstruction(Enum):
     IASN = 1
@@ -64,62 +53,83 @@ class BinaryOp(Enum):
     AND = auto()
     OR = auto()
 
-class QuadInstructionFetcher:
-    _arg_map: Dict[QuadInstructionType, Dict[SupportedDtype, QuadInstruction]] = {
-        QuadInstructionType.ASN: {
-            SupportedDtype.INT: QuadInstruction.IASN,
-            SupportedDtype.FLOAT: QuadInstruction.RASN
+class QuadInstructionType(Enum):
+    ASN = 1
+    PRT = auto()
+    INP = auto()
+    EQL = auto()
+    NQL = auto()
+    LSS = auto()
+    GRT = auto()
+    ADD = auto()
+    SUB = auto()
+    MLT = auto()
+    DIV = auto()    
+    ITOR = auto()
+    RTOI = auto()
+    JUMP = auto()
+    JMPZ = auto()
+    HALT = auto()
+    
+    # This is map from instruction type to instruction,
+    # with the affective type of the arguments reference.
+    _arg_map: Dict[Self, Dict[Dtype, QuadInstruction]] = {
+        ASN: {
+            Dtype.INT: QuadInstruction.IASN,
+            Dtype.FLOAT: QuadInstruction.RASN
         },
-        QuadInstructionType.PRT: {
-            SupportedDtype.INT: QuadInstruction.IPRT,
-            SupportedDtype.FLOAT: QuadInstruction.RPRT
+        PRT: {
+            Dtype.INT: QuadInstruction.IPRT,
+            Dtype.FLOAT: QuadInstruction.RPRT
         },
-        QuadInstructionType.INP: {
-            SupportedDtype.INT: QuadInstruction.IINP,
-            SupportedDtype.FLOAT: QuadInstruction.RINP
+        INP: {
+            Dtype.INT: QuadInstruction.IINP,
+            Dtype.FLOAT: QuadInstruction.RINP
         },
-        QuadInstructionType.EQL: {
-            SupportedDtype.INT: QuadInstruction.IEQL,
-            SupportedDtype.FLOAT: QuadInstruction.REQL
+        EQL: {
+            Dtype.INT: QuadInstruction.IEQL,
+            Dtype.FLOAT: QuadInstruction.REQL
         },
-        QuadInstructionType.NQL: {
-            SupportedDtype.INT: QuadInstruction.INQL,
-            SupportedDtype.FLOAT: QuadInstruction.RNQL
+        NQL: {
+            Dtype.INT: QuadInstruction.INQL,
+            Dtype.FLOAT: QuadInstruction.RNQL
         },
-        QuadInstructionType.LSS: {
-            SupportedDtype.INT: QuadInstruction.ILSS,
-            SupportedDtype.FLOAT: QuadInstruction.RLSS
+        LSS: {
+            Dtype.INT: QuadInstruction.ILSS,
+            Dtype.FLOAT: QuadInstruction.RLSS
         },
-        QuadInstructionType.GRT: {
-            SupportedDtype.INT: QuadInstruction.IGRT,
-            SupportedDtype.FLOAT: QuadInstruction.RGRT
+        GRT: {
+            Dtype.INT: QuadInstruction.IGRT,
+            Dtype.FLOAT: QuadInstruction.RGRT
         },
-        QuadInstructionType.ADD: {
-            SupportedDtype.INT: QuadInstruction.IADD,
-            SupportedDtype.FLOAT: QuadInstruction.RADD
+        ADD: {
+            Dtype.INT: QuadInstruction.IADD,
+            Dtype.FLOAT: QuadInstruction.RADD
         },
-        QuadInstructionType.SUB:  {
-            SupportedDtype.INT: QuadInstruction.ISUB,
-            SupportedDtype.FLOAT: QuadInstruction.RSUB
+        SUB:  {
+            Dtype.INT: QuadInstruction.ISUB,
+            Dtype.FLOAT: QuadInstruction.RSUB
         },
-        QuadInstructionType.MLT: {
-            SupportedDtype.INT: QuadInstruction.IMLT,
-            SupportedDtype.FLOAT: QuadInstruction.RMLT
+        MLT: {
+            Dtype.INT: QuadInstruction.IMLT,
+            Dtype.FLOAT: QuadInstruction.RMLT
         },
-        QuadInstructionType.DIV: {
-            SupportedDtype.INT: QuadInstruction.IDIV,
-            SupportedDtype.FLOAT: QuadInstruction.RDIV
+        DIV: {
+            Dtype.INT: QuadInstruction.IDIV,
+            Dtype.FLOAT: QuadInstruction.RDIV
         },
     }
     
     @staticmethod
-    def get_by2args(type: QuadInstructionType, arg1: SupportedDtype, arg2: SupportedDtype) -> QuadInstruction:
-        major_dtype: SupportedDtype = SupportedDtype.FLOAT \
-            if arg1 == SupportedDtype.FLOAT or arg2 == SupportedDtype.FLOAT \
-            else SupportedDtype.INT
-        return QuadInstructionFetcher._arg_map[type][major_dtype]
+    def get_by2args(arg1: Dtype, arg2: Dtype) -> QuadInstruction:
+        major_dtype: Dtype = Dtype.FLOAT \
+            if arg1 == Dtype.FLOAT or arg2 == Dtype.FLOAT \
+            else Dtype.INT
+        return QuadInstructionType._arg_map[type][major_dtype]
     
     @staticmethod
-    def get_by1arg(type: QuadInstructionType, arg: SupportedDtype) -> QuadInstruction:
-        return QuadInstructionFetcher._arg_map[type][arg]
-        
+    def get_by1arg(arg: Dtype) -> QuadInstruction:
+        return QuadInstructionType._arg_map[type][arg]
+
+    def get_bytype(self, arg: Dtype) -> QuadInstruction:
+        return QuadInstructionType._arg_map[self][arg]

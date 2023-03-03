@@ -7,8 +7,8 @@ from cpl_ast import Stmt
 from consts import BinaryOp
 
 from sly import Parser
-from lexer import CplLexer
-from consts import SupportedDtype
+from cpl_lexer import CplLexer
+from consts import Dtype
 
 from cpl_ast import Program, OpBoolExpr, BinaryOpExpression, BoolExpr, Expression,\
     IfStmt, WhileStmt, SwitchStmt, Case, BreakStmt, AssignStmt,\
@@ -37,9 +37,9 @@ class CplParser(Parser):
     @_('INT', 'FLOAT')
     def _type(self, p):
         if p[0] == 'int':
-            return SupportedDtype.INT
+            return Dtype.INT
         elif p[0] == 'float':
-            return SupportedDtype.FLOAT
+            return Dtype.FLOAT
         raise ValueError(f'Unknown type: {p[0]}')
     
     @_('idlist "," ID')

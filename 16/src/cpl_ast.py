@@ -1,10 +1,15 @@
 from __future__ import annotations
 from dataclasses import dataclass, fields
 import logging
-from typing import Dict, Iterable, List, Union
-from consts import SupportedDtype, BinaryOp
-from label import Labels
+from typing import Iterable, List, Union
+
+from consts import QuadInstruction
+
+from consts import QuadInstructionType
+
+from consts import Dtype, BinaryOp
 from .quad_code import QuadCode
+
 @dataclass
 class AstNode:
     """ 
@@ -85,8 +90,6 @@ class AstNode:
         """ Called after visiting the node's children. """
         pass
 
-labels = Labels()
-symbols: Dict[Identifier, SupportedDtype] = {}
 code: QuadCode = QuadCode()
 
 @dataclass
@@ -95,16 +98,17 @@ class Stmt(AstNode):
 
 @dataclass
 class AssignStmt(Stmt):
-    id: Identifier
-    expr: AstNode
+    _id: Identifier
+    expr: Expression
+
     def after(self):
-        if self.id not in symbols:
-            self._logger.error(f"Undeclared variable {self.id}!")
-        code.emit()
-    
+        code.emit_op_dest(QuadInstructionType.ASN, self._id, (self.expr.val, self.expr.dtype))
+
 @dataclass
 class InputStmt(Stmt):
     id: Identifier
+    def after(self):
+        code.emit_op_dest(QuadInstructionType.INP, self.id)
 
 @dataclass
 class StmtList(AstNode):
@@ -113,22 +117,55 @@ class StmtList(AstNode):
 @dataclass
 class OutputStmt(Stmt):
     expr: Expression
+    def after(self):
+        code.emit_op_dest(QuadInstructionType.PRT, self.expr.val)
 
 @dataclass
 class IfStmt(Stmt):
     bool_expr: BoolExpr
+    
+    @AstNode.after_visit('bool_expr')
+    def after_boolexp(self):
+        self.false_label = code.newlabel()
+        code.emit(QuadInstruction.JMPZ, self.bool_expr.target, self.false_label)
+
     true_stmts: StmtList
+    
+    @AstNode.before_visit('false_stmts')
+    def before_false(self):
+        code.emitlabel(self.false_label)
+    
     false_stmts: StmtList
+    def after(self):
+        code.emitlabel()
     
 @dataclass
 class WhileStmt(Stmt):
+    def before(self):
+        self.boolexp_label = code.newlabel()
+        self.exit_label = code.newlabel()
+
     bool_expr: BoolExpr
+    
+    @AstNode.after_visit('bool_expr')
+    def after_boolexp(self):
+        code.emit(QuadInstruction.JMPZ, self.bool_expr.target, self.exit_label)
+    
     stmts: StmtList
+    
+    def after(self):
+        code.emit(QuadInstruction.JUMP, self.boolexp_label)
+        code.emitlabel(self.exit_label)
     
 @dataclass
 class Case(AstNode):
     number: Number
     stmts: StmtList
+    
+    cmp_source: Identifier = None
+    
+    def before(self):
+        code.emit_op_temp(QuadInstructionType.EQL, self.number, self.cmp_source)
 
 @dataclass
 class SwitchStmt(Stmt):
@@ -149,6 +186,8 @@ class BinaryOpExpression(AstNode):
     left: Expression
     right: Expression
     op: Identifier
+    
+    target: Identifier = None
 
 
 @dataclass
@@ -172,12 +211,12 @@ class Declarations(AstNode):
 @dataclass
 class Declaration(AstNode):
     idlist: List[Identifier]
-    _type: SupportedDtype
+    _type: Dtype
 
 @dataclass
 class CastExpression(AstNode):
     arg: Expression
-    _to_type: SupportedDtype
+    _to_type: Dtype
 
 @dataclass
 class Program(AstNode):
@@ -187,7 +226,11 @@ class Program(AstNode):
     @AstNode.after_visit("stmts")
     def print_hello(self):
         print("Hello!")
-    
+
+@dataclass
+class Expression(AstNode):
+    val: Union[BinaryOpExpression, Number, Identifier]
+    dtype: Dtype
+
 Number = Union[int, float]
 Identifier = str
-Expression = Union[BinaryOpExpression, Number, Identifier]
