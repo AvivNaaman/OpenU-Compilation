@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, Iterable, List
+from typing import List
 
 from cpl_ast import Stmt
 
@@ -21,7 +21,6 @@ class CplParser(Parser):
     
     @_('declarations stmt_block')
     def program(self, p):
-        print("Prog")
         return Program(p[0], p[1])
     
     @_('declarations declaration', 'declaration')
