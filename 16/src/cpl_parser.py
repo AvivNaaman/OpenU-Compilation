@@ -10,7 +10,7 @@ from sly import Parser
 from cpl_lexer import CplLexer
 from consts import Dtype
 
-from cpl_ast import Program, OpBoolExpr, BinaryOpExpression, BoolExpr, Expression,\
+from cpl_ast import Program, BinaryOpExpression, BinaryOpExpression, BoolExpr, Expression,\
     IfStmt, WhileStmt, SwitchStmt, Case, BreakStmt, AssignStmt,\
         InputStmt, OutputStmt, Declarations, Declaration, NotBoolExpr, CastExpression
 
@@ -105,19 +105,19 @@ class CplParser(Parser):
     def boolexpr(self, p) -> Expression:
         if len(p) == 1:
             return p[0]
-        return OpBoolExpr(p[0], p[1], CplBinaryOp.OR)
+        return BinaryOpExpression(p[0], p[1], CplBinaryOp.OR)
     
     @_('boolterm AND boolfactor', "boolfactor")
     def boolterm(self, p) -> Expression:
         if len(p) == 1:
             return p[0]
-        return OpBoolExpr(p[0], p[1], CplBinaryOp.AND)
+        return BinaryOpExpression(p[0], p[1], CplBinaryOp.AND)
     
     @_('NOT "(" boolexpr ")"', "expression RELOP expression")
     def boolfactor(self, p) -> BoolExpr:
         if len(p) == 4:
             return NotBoolExpr(p[2])
-        return OpBoolExpr(p[0], p[2], p[1])
+        return BinaryOpExpression(p[0], p[2], p[1])
     
     @_('expression ADDOP term', 'term')
     def expression(self, p):

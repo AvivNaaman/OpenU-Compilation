@@ -141,17 +141,7 @@ class QuadInstructionType(Enum):
             Dtype.FLOAT: QuadInstruction.RDIV
         },
     }
-    
-    @staticmethod
-    def get_by2args(arg1: Dtype, arg2: Dtype) -> QuadInstruction:
-        major_dtype: Dtype = Dtype.FLOAT \
-            if arg1 == Dtype.FLOAT or arg2 == Dtype.FLOAT \
-            else Dtype.INT
-        return QuadInstructionType._arg_map[type][major_dtype]
-    
-    @staticmethod
-    def get_by1arg(arg: Dtype) -> QuadInstruction:
-        return QuadInstructionType._arg_map[type][arg]
 
-    def get_bytype(self, arg: Dtype) -> QuadInstruction:
+    def get_bytype(self: Self, arg: Dtype) -> QuadInstruction:
+        print(self, arg)
         return QuadInstructionType._arg_map[self][arg]

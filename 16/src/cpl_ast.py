@@ -6,6 +6,8 @@ from typing import Iterable, List, Union, Optional
 from consts import QuadInstruction, QuadInstructionType, Dtype, CplBinaryOp
 from quad_code import QuadCode
 
+CONTINUE_ON_SEMANTIC_ERROR = False
+
 @dataclass
 class AstNode:
     """ 
@@ -53,7 +55,10 @@ class AstNode:
                 for element in val:
                     self._visit_child(element)
         except Exception as e:
-            self._logger.error(f"Error while visiting {val}: {e}")
+            if CONTINUE_ON_SEMANTIC_ERROR:
+                self._logger.error(f"Error while visiting {val}: {e}")
+            else:
+                raise 
             return False
         return True
     
@@ -242,16 +247,6 @@ class BinaryOpExpression(AstNode):
 @dataclass
 class BoolExpr(AstNode):
     pass
-
-@dataclass
-class OpBoolExpr(BoolExpr):
-    left: BoolExpr
-    right: BoolExpr
-    op: CplBinaryOp
-
-    def after(self):
-        self.target = code.newtemp()
-        code.emit_op_dest(QuadInstructionType.ASN, self.target, (self.left.target, self.right.target))
 
 @dataclass
 class NotBoolExpr(BoolExpr):
