@@ -1,0 +1,40 @@
+IMLT temp7 4 3
+IADD temp8 5 temp7
+IDIV temp9 6 7
+ITOR temp11 temp9
+RMLT temp10 temp11 10.2
+ITOR temp13 temp8
+RSUB temp12 temp13 temp10
+RSUB temp14 temp12 temp4
+RPRT temp14
+RMLT temp15 temp1 temp2
+RADD temp16 temp0 temp15
+ITOR temp18 7
+RDIV temp17 temp3 temp18
+ITOR temp20 99
+RMLT temp19 temp17 temp20
+RSUB temp21 temp16 temp19
+ITOR temp23 500
+RSUB temp22 temp21 temp23
+REQL temp24 temp22 9490043.4
+JMPZ temp24 39
+IEQL temp25 0 Label0
+JMPZ temp25 25
+IPRT 39
+JUMP Label3
+IEQL temp26 1 Label0
+JMPZ temp26 29
+IPRT 40
+JUMP Label3
+IEQL temp27 2 Label0
+JMPZ temp27 32
+IPRT Label3
+IEQL temp28 3 Label0
+JMPZ temp28 36
+IPRT 25
+JUMP Label3
+RPRT 1.5
+RPRT temp5
+JUMP 40
+RPRT temp6
+HALT

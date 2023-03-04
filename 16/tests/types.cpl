@@ -1,0 +1,19 @@
+a, b: float;
+c, d: int;
+{
+    a = a + b;
+    a = a + c;
+    c = c + d;
+
+    /* Cast is required here! */
+    c = static_cast<int>(a + d);
+    c = static_cast<int>(a) + d;
+    c = a + static_cast<int>(d);
+
+    c = static_cast<int>(static_cast<float>(a) * static_cast<float>(c));
+
+    /* Both should produce the same Quad code. */
+    b = static_cast<int>(b) + static_cast<int>(a);
+    b = static_cast<float>(static_cast<int>(b) + static_cast<int>(a));
+
+}

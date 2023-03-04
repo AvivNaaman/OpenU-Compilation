@@ -1,3 +1,9 @@
+"""
+This module implements the Abstract Syntax Tree (AST) representation of the source code.
+Each group of similar nodes is implemented as a dataclass inheriting from AstNode,
+and each node is a subclass of AstNode. AstNode supports bison-like mid rule actions,
+allowing an easy implementation of the code generation.
+"""
 from __future__ import annotations
 from dataclasses import dataclass, fields
 import logging
@@ -156,7 +162,7 @@ class WhileStmt(Stmt):
     def before(self):
         self.boolexp_label = code.newlabel()
         self.exit_label = code.newlabel()
-        code.push_break_scope(self.exit_label)
+        code.label_scope.push(self.exit_label)
 
     bool_expr: Expression
     
@@ -169,7 +175,7 @@ class WhileStmt(Stmt):
     def after(self):
         code.emit(QuadInstruction.JUMP, self.boolexp_label)
         code.emitlabel(self.exit_label)
-        code.pop_break_scope()
+        code.label_scope.pop()
     
 @dataclass
 class Case(AstNode):
@@ -189,7 +195,7 @@ class Case(AstNode):
 @dataclass
 class SwitchStmt(Stmt):
     def before(self):
-        code.push_break_scope(code.newlabel())
+        code.label_scope.push(code.newlabel())
 
     expr: Expression
 
@@ -204,13 +210,13 @@ class SwitchStmt(Stmt):
     default: StmtList
 
     def after(self):
-        code.pop_break_scope()
+        code.label_scope.pop()
 
 @dataclass
 class BreakStmt(Stmt):
     def after(self):
         try:
-            code.emit(QuadInstruction.JUMP, code.peek_break_scope())
+            code.emit(QuadInstruction.JUMP, code.label_scope.peek())
         except IndexError:
             raise ValueError("Break statement outside of loop or switch-case.")
 
@@ -273,7 +279,7 @@ class CastExpression(AstNode):
         code.emit(QuadInstruction.ITOR if \
                     self._to_type == Dtype.INT else \
                     QuadInstruction.RTOI,
-                    tname, self.arg.val)
+                    tname, expression_raw(self.arg))
         self.target = tname
 
 @dataclass
@@ -289,6 +295,8 @@ class Program(AstNode):
 
 def expression_raw(expression: Optional[Expression]) -> Union[Number, Identifier]:
     assert expression is not None, "Expression is None!"
+    # If it's not a terminal expression (number or identifier), it must have a target,
+    # and we're looking up for that target.
     if isinstance(expression, (BinaryOpExpression, CastExpression, NotBoolExpr)):
         target = expression.target
         assert target is not None, "Expression target is None!"

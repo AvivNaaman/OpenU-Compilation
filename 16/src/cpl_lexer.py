@@ -1,16 +1,24 @@
+"""
+A Module containing the lexer for the CPL language, using the SLY library.
+The lexical values of the tokens are customized to support the AST generation using the parser.
+"""
+
 from __future__ import annotations
+
+from consts import Dtype
 from consts import CplBinaryOp
 from sly import Lexer
 
 class CplLexer(Lexer):
 
-    tokens = { ID, NUM, IF, ELSE, WHILE, BREAK,
+    tokens = { NUM, IF, ELSE, WHILE, BREAK,
               SWITCH, CASE, DEFAULT, FLOAT, INT,
               INPUT, OUTPUT, RELOP, ADDOP, MULOP, OR,
-              AND, NOT, CAST }
+              AND, NOT, CAST, ID }
     literals = { '=', ';', '(', ')', '{', '}', ',', ':' }
     ignore = ' \t\n'
-    ignore_comment = r'/\*.*?\*/'
+    # Multi-line c-style comment with option to put anything inside /* */:
+    ignore_comment = r'/\*(.|\n)*?\*/'
     
 
     BREAK = r'break'
@@ -28,7 +36,6 @@ class CplLexer(Lexer):
     OR = r'\|\|'
     AND = r'&&'
     NOT = r'!'
-    ID = r'[a-zA-Z_][a-zA-Z0-9_]*'
     
     @_(r'(=|!)=|(<|>)=?')
     def RELOP(self, t):
@@ -47,7 +54,7 @@ class CplLexer(Lexer):
     
     @_(r'static_cast<\s*(int|float)\s*>')
     def CAST(self, t):
-        t.value = t.value[14:-2].strip()
+        t.value = Dtype(t.value[12:-1].strip())
         return t
     
     @_(r'\d+(\.\d+)?')
@@ -56,5 +63,8 @@ class CplLexer(Lexer):
             t.value = float(t.value)
         else:
             t.value = int(t.value)
+        return t
+    
+    ID = r'[a-zA-Z_][a-zA-Z0-9_]*'
     
     

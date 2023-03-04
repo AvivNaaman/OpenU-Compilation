@@ -9,7 +9,7 @@
             "type": "python",
             "request": "launch",
             "program": "16/src/main.py",
-            "args": ["16/test.cpl"],
+            "args": ["16/tests/types.cpl"],
             "console": "integratedTerminal",
             "justMyCode": true
         }

@@ -1,0 +1,20 @@
+RADD temp1 a b
+RASN a temp1 
+ITOR temp3 c 
+RADD temp2 a temp3
+RASN a temp2 
+IADD temp4 c d
+IASN c temp4 
+ITOR temp6 d 
+RADD temp5 a temp6
+ITOR temp7 temp5 
+IASN c temp7 
+ITOR temp8 a 
+IADD temp9 temp8 d
+IASN c temp9 
+RTOI temp10 a 
+RTOI temp11 c 
+RMLT temp12 temp10 temp11
+ITOR temp13 temp12 
+IASN c temp13 
+HALT   

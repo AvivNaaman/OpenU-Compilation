@@ -1,3 +1,7 @@
+"""
+A Module containing the parser for the CPL language, using the SLY library,
+which returns an Abstract Syntax Tree (AST) representation of the source code.
+"""
 from __future__ import annotations
 
 from typing import List
@@ -105,13 +109,13 @@ class CplParser(Parser):
     def boolexpr(self, p) -> Expression:
         if len(p) == 1:
             return p[0]
-        return BinaryOpExpression(p[0], p[1], CplBinaryOp.OR)
+        return BinaryOpExpression(p[0], p[2], CplBinaryOp.OR)
     
     @_('boolterm AND boolfactor', "boolfactor")
     def boolterm(self, p) -> Expression:
         if len(p) == 1:
             return p[0]
-        return BinaryOpExpression(p[0], p[1], CplBinaryOp.AND)
+        return BinaryOpExpression(p[0], p[2], CplBinaryOp.AND)
     
     @_('NOT "(" boolexpr ")"', "expression RELOP expression")
     def boolfactor(self, p) -> Expression:
@@ -123,13 +127,13 @@ class CplParser(Parser):
     def expression(self, p):
         if len(p) == 1:
             return p[0]
-        return BinaryOpExpression(p[0], p[1], p[1])
+        return BinaryOpExpression(p[0], p[2], p[1])
     
     @_('term MULOP factor', 'factor')
     def term(self, p):
         if len(p) == 1:
             return p[0]
-        return BinaryOpExpression(p[0], p[1], p[1])
+        return BinaryOpExpression(p[0], p[2], p[1])
     
     @_('"(" expression ")"', 'CAST "(" expression ")"', 'ID', 'NUM')
     def factor(self, p):

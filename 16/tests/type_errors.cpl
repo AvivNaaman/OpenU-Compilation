@@ -1,0 +1,12 @@
+a, b: float;
+c, d: int;
+{
+    /* Each line here should cause a type error from casting float to int! */
+    /*d = static_cast<int>(c) - b;*/
+    /*c = a - static_cast<int>(d);*/
+    /*c = static_cast<float>(a) / b;*/
+    /*d = static_cast<int>(c) * static_cast<float>(b);*/
+    /*d = static_cast<float>(c/9 + 5*7/b-b + 70*a - 5 *3);*/
+    /*c = d * 50.0;*/
+    /*d = 30.5 * c * d;*/
+}

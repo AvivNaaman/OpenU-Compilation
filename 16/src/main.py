@@ -1,3 +1,7 @@
+"""
+Main entry point for the CPL to Quad compiler.
+"""
+
 import logging
 from pathlib import Path
 from cpl_parser import CplParser
@@ -22,6 +26,7 @@ if __name__ == '__main__':
         raise
     
     lexer = CplLexer()
+    print(list(lexer.tokenize(source)))
     tokens = lexer.tokenize(source)
     
     parser = CplParser()

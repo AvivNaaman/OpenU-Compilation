@@ -4,16 +4,23 @@ from typing import Dict, Tuple
 from typing import Self
 
 class Dtype(Enum):
-    INT = 1
-    FLOAT = auto()
+    """ This enum describes the data types supported by the compiler. """
+    INT = "int"
+    FLOAT = "float"
     
-    def affective_type(self, other: Self) -> Self:
-        if self == Dtype.FLOAT or other == Dtype.FLOAT:
+    def affective_type(self: Self, *others: Self) -> Self:
+        """
+        Given a list of data types, returns the most general type.
+        For CPL, the float type is selected when at least one of the types is float,
+        otherwise, all types are int.
+        """
+        if self == Dtype.FLOAT or any(other == Dtype.FLOAT for other in others):
             return Dtype.FLOAT
         return Dtype.INT
     
 
 class QuadInstruction(Enum):
+    """ This enum describes the instruction set of the Quad code. """
     IASN = 1
     IPRT = auto()
     IINP = auto()
@@ -43,10 +50,15 @@ class QuadInstruction(Enum):
     HALT = auto()  
 
 class CplBinaryOp(Enum):
+    """
+    This enum describes the binary operators supported by the compiler - 
+    meaning ANY operation that gets 2 inputs and returns a single output.
+    """
     ADD = "+"
     SUB = "-"
     MLT = "*"
     DIV = "/"
+    
     EQL = "=="
     NQL = "!="
     LSS = "<"
@@ -59,11 +71,12 @@ class CplBinaryOp(Enum):
     
     def to_quad_op(self) -> Tuple[QuadInstructionType, bool]:
         """
-        Converts the CplBinaryOp to the QuadInstructionType,
+        Converts the CplBinaryOp to the QuadInstructionType, returns it's value, combined
         with an optional boolean value to indicate whether flipping the operand order is required. 
         """
         return {
             self.ADD: (QuadInstructionType.ADD, False),
+            self.SUB: (QuadInstructionType.SUB, False),
             self.MLT: (QuadInstructionType.MLT, False),
             self.DIV: (QuadInstructionType.DIV, False),
             self.EQL: (QuadInstructionType.EQL, False),
@@ -77,6 +90,13 @@ class CplBinaryOp(Enum):
 
 
 class QuadInstructionType(Enum):
+    """ 
+    This enum abstracts the data type off of the QuadInstruction enum.
+    You may use it, combined with the get_bytype method, to get the QuadInstruction
+    By a QuadInstructionType and a Dtype for the operation.
+    Note - this is not a complete list of all QuadInstructions, but rather a list of
+    basic supported operations, to make the AST code generation easier.
+    """
     ASN = 1
     PRT = auto()
     INP = auto()
@@ -96,13 +116,15 @@ class QuadInstructionType(Enum):
     
 
     def get_bytype(self: Self, arg: Dtype) -> QuadInstruction:
-        print(self, arg)
+        """ 
+        Returns the QuadInstruction with the given argument type
+        matching the QuadInstructionType specified. 
+        """
         return _arg_map[self][arg]
 
 
-# This is map from instruction type to instruction,
-# with the affective type of the arguments reference.
-_arg_map: Dict[Self, Dict[Dtype, QuadInstruction]] = {
+
+_arg_map: Dict[QuadInstructionType, Dict[Dtype, QuadInstruction]] = {
     QuadInstructionType.ASN: {
         Dtype.INT: QuadInstruction.IASN,
         Dtype.FLOAT: QuadInstruction.RASN
@@ -148,3 +170,5 @@ _arg_map: Dict[Self, Dict[Dtype, QuadInstruction]] = {
         Dtype.FLOAT: QuadInstruction.RDIV
     },
 }
+"""This is map from instruction type to instruction,
+with the affective type of the arguments reference."""
