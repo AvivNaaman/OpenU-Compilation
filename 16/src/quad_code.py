@@ -1,4 +1,5 @@
 
+from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Union
 from consts import QuadInstruction, QuadInstructionType, Dtype
 
@@ -20,6 +21,8 @@ class QuadCode:
         self.symbols[name] = dtype
     
     def emitlabel(self, label: str) -> None:
+        if label in self.labels:
+            raise Exception(f"Label {label} re-emitted!")
         self.labels[label] = self.code_lines
     
     def emit(self, op: QuadInstruction,
@@ -90,8 +93,11 @@ class QuadCode:
     
     def apply_labels(self) -> None:
         for i, (op, arg1, arg2, arg3) in enumerate(self.code):
+            # TODO: Identify labels as labels, mixup with variables might occur!
             if arg1 in self.labels:
                 self.code[i] = (op, self.labels[arg1], arg2, arg3)
+            if arg2 in self.labels:
+                self.code[i] = (op, arg1, self.labels[arg2], arg3)
 
     def push_break_scope(self, label: str) -> None:
         self.break_scopes_stack.append(label)
@@ -103,15 +109,17 @@ class QuadCode:
         return self.break_scopes_stack[-1]
 
     @staticmethod
-    def _printable(val: Union[str, int, float, QuadInstruction]) -> str:
+    def _printable(val: Optional[Union[str, int, float, QuadInstruction]]) -> str:
+        if val is None:
+            return ""
         if isinstance(val, str):
             return val
         elif isinstance(val, QuadInstruction):
             return val.name
         return str(val)
     
-    def write(self, filename: str) -> None:
+    def write(self, filename: Union[str, Path]) -> None:
         self.apply_labels()
         with open(filename, 'w') as f:
             for line in self.code:
-                f.write(" ".join([self._printable(j) for j in line]))
+                f.write(" ".join([self._printable(j) for j in line]) + '\n')

@@ -281,9 +281,11 @@ class Program(AstNode):
     declarations: Declarations
     stmts: StmtList
 
-    @AstNode.after_visit("stmts")
-    def print_hello(self):
-        print("Hello!")
+    code: Optional[QuadCode] = None
+    
+    def after(self):
+        code.emit(QuadInstruction.HALT)
+        self.code = code
 
 def expression_raw(expression: Optional[Expression]) -> Union[Number, Identifier]:
     assert expression is not None, "Expression is None!"
