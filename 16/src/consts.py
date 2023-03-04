@@ -43,19 +43,19 @@ class QuadInstruction(Enum):
     HALT = auto()  
 
 class CplBinaryOp(Enum):
-    ADD = 1
-    SUB = auto()
-    MLT = auto()
-    DIV = auto()
-    EQL = auto()
-    NQL = auto()
-    LSS = auto()
-    LSSEQ = auto()
-    GRT = auto()
-    GRTEQ = auto()
+    ADD = "+"
+    SUB = "-"
+    MLT = "*"
+    DIV = "/"
+    EQL = "=="
+    NQL = "!="
+    LSS = "<"
+    LSSEQ = "<="
+    GRT = ">"
+    GRTEQ = ">="
     
-    AND = auto()
-    OR = auto()
+    AND = "&&"
+    OR = "||"
     
     def to_quad_op(self) -> Tuple[QuadInstructionType, bool]:
         """
@@ -73,6 +73,7 @@ class CplBinaryOp(Enum):
             self.GRTEQ: (QuadInstructionType.LSS, True),
             self.LSSEQ: (QuadInstructionType.GRT, True),
         }[self]
+
 
 
 class QuadInstructionType(Enum):
@@ -93,55 +94,57 @@ class QuadInstructionType(Enum):
     JMPZ = auto()
     HALT = auto()
     
-    # This is map from instruction type to instruction,
-    # with the affective type of the arguments reference.
-    _arg_map: Dict[Self, Dict[Dtype, QuadInstruction]] = {
-        ASN: {
-            Dtype.INT: QuadInstruction.IASN,
-            Dtype.FLOAT: QuadInstruction.RASN
-        },
-        PRT: {
-            Dtype.INT: QuadInstruction.IPRT,
-            Dtype.FLOAT: QuadInstruction.RPRT
-        },
-        INP: {
-            Dtype.INT: QuadInstruction.IINP,
-            Dtype.FLOAT: QuadInstruction.RINP
-        },
-        EQL: {
-            Dtype.INT: QuadInstruction.IEQL,
-            Dtype.FLOAT: QuadInstruction.REQL
-        },
-        NQL: {
-            Dtype.INT: QuadInstruction.INQL,
-            Dtype.FLOAT: QuadInstruction.RNQL
-        },
-        LSS: {
-            Dtype.INT: QuadInstruction.ILSS,
-            Dtype.FLOAT: QuadInstruction.RLSS
-        },
-        GRT: {
-            Dtype.INT: QuadInstruction.IGRT,
-            Dtype.FLOAT: QuadInstruction.RGRT
-        },
-        ADD: {
-            Dtype.INT: QuadInstruction.IADD,
-            Dtype.FLOAT: QuadInstruction.RADD
-        },
-        SUB:  {
-            Dtype.INT: QuadInstruction.ISUB,
-            Dtype.FLOAT: QuadInstruction.RSUB
-        },
-        MLT: {
-            Dtype.INT: QuadInstruction.IMLT,
-            Dtype.FLOAT: QuadInstruction.RMLT
-        },
-        DIV: {
-            Dtype.INT: QuadInstruction.IDIV,
-            Dtype.FLOAT: QuadInstruction.RDIV
-        },
-    }
 
     def get_bytype(self: Self, arg: Dtype) -> QuadInstruction:
         print(self, arg)
-        return QuadInstructionType._arg_map[self][arg]
+        return _arg_map[self][arg]
+
+
+# This is map from instruction type to instruction,
+# with the affective type of the arguments reference.
+_arg_map: Dict[Self, Dict[Dtype, QuadInstruction]] = {
+    QuadInstructionType.ASN: {
+        Dtype.INT: QuadInstruction.IASN,
+        Dtype.FLOAT: QuadInstruction.RASN
+    },
+    QuadInstructionType.PRT: {
+        Dtype.INT: QuadInstruction.IPRT,
+        Dtype.FLOAT: QuadInstruction.RPRT
+    },
+    QuadInstructionType.INP: {
+        Dtype.INT: QuadInstruction.IINP,
+        Dtype.FLOAT: QuadInstruction.RINP
+    },
+    QuadInstructionType.EQL: {
+        Dtype.INT: QuadInstruction.IEQL,
+        Dtype.FLOAT: QuadInstruction.REQL
+    },
+    QuadInstructionType.NQL: {
+        Dtype.INT: QuadInstruction.INQL,
+        Dtype.FLOAT: QuadInstruction.RNQL
+    },
+    QuadInstructionType.LSS: {
+        Dtype.INT: QuadInstruction.ILSS,
+        Dtype.FLOAT: QuadInstruction.RLSS
+    },
+    QuadInstructionType.GRT: {
+        Dtype.INT: QuadInstruction.IGRT,
+        Dtype.FLOAT: QuadInstruction.RGRT
+    },
+    QuadInstructionType.ADD: {
+        Dtype.INT: QuadInstruction.IADD,
+        Dtype.FLOAT: QuadInstruction.RADD
+    },
+    QuadInstructionType.SUB:  {
+        Dtype.INT: QuadInstruction.ISUB,
+        Dtype.FLOAT: QuadInstruction.RSUB
+    },
+    QuadInstructionType.MLT: {
+        Dtype.INT: QuadInstruction.IMLT,
+        Dtype.FLOAT: QuadInstruction.RMLT
+    },
+    QuadInstructionType.DIV: {
+        Dtype.INT: QuadInstruction.IDIV,
+        Dtype.FLOAT: QuadInstruction.RDIV
+    },
+}

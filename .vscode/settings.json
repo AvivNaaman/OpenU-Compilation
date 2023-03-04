@@ -49,5 +49,6 @@
         "code.h": "c",
         "list.h": "c",
         "stdlib.h": "c"
-    }
+    },
+    "python.analysis.typeCheckingMode": "basic"
 }

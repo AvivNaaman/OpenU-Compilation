@@ -1,4 +1,5 @@
 from __future__ import annotations
+from consts import CplBinaryOp
 from sly import Lexer
 
 class CplLexer(Lexer):
@@ -24,14 +25,25 @@ class CplLexer(Lexer):
     SWITCH = r'switch'
     WHILE = r'while'
     
-    RELOP = r'==|!=|<=|>=|<|>'
-    ADDOP = r'\+|-'
-    MULOP = r'\*|/'
-    
     OR = r'\|\|'
     AND = r'&&'
     NOT = r'!'
     ID = r'[a-zA-Z_][a-zA-Z0-9_]*'
+    
+    @_(r'(=|!)=|(<|>)=?')
+    def RELOP(self, t):
+        t.value = CplBinaryOp(t.value)
+        return t
+    
+    @_(r'\+|-')
+    def ADDOP(self, t):
+        t.value = CplBinaryOp(t.value)
+        return t
+    
+    @_(r'\*|/')
+    def MULOP(self, t):
+        t.value = CplBinaryOp(t.value)
+        return t
     
     @_(r'static_cast<\s*(int|float)\s*>')
     def CAST(self, t):

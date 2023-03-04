@@ -1,7 +1,8 @@
 
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 from consts import QuadInstruction, QuadInstructionType, Dtype
 
+ArgumentType = Union[str, int, float]
 class QuadCode:
     def __init__(self) -> None:
         self.code: List[Tuple] = []
@@ -18,13 +19,13 @@ class QuadCode:
             raise Exception(f"Symbol {name} already exists")
         self.symbols[name] = dtype
     
-    def emitlabel(self, label: str) -> str:
+    def emitlabel(self, label: str) -> None:
         self.labels[label] = self.code_lines
     
     def emit(self, op: QuadInstruction,
-             arg1: Optional[str] = None,
-             arg2: Optional[str] = None,
-             arg3: Optional[str] = None) -> None:
+             arg1: Optional[ArgumentType] = None,
+             arg2: Optional[ArgumentType] = None,
+             arg3: Optional[ArgumentType] = None) -> None:
         """ 
         This method adds a code line to the QUAD output code.
         """
@@ -41,10 +42,15 @@ class QuadCode:
         self.symbols[tname] = dtype
         return tname
     
-    def auto_cast(self, dest_type: Dtype, *args: str) -> None:
+    def auto_cast(self, dest_type: Dtype, *args: ArgumentType) -> None:
         """ This method adds cast for all the arguments to the dest_type, if needed. """
         for to_cast in args:
-            to_cast_dtype = self.symbols[to_cast]
+            
+            if isinstance(to_cast, str):
+                to_cast_dtype = self.symbols[to_cast]
+            else:
+                to_cast_dtype = Dtype.INT if isinstance(to_cast, int) else Dtype.FLOAT
+                
             if to_cast_dtype == dest_type:
                 continue
             if to_cast_dtype == Dtype.INT and dest_type == Dtype.FLOAT:
@@ -53,32 +59,34 @@ class QuadCode:
                 raise ValueError(f"Cannot implicitly cast {to_cast} "+
                                  f"of type {to_cast_dtype} to type {dest_type}!")
     
-    def emit_op_temp(self, op: QuadInstructionType,
-                arg1: str,
-                arg2: str) -> Tuple[str, Dtype]:
+    def _arg_type(self, arg: ArgumentType) -> Dtype:
+        if isinstance(arg, str):
+            return self.symbols[arg]
+        return Dtype.INT if isinstance(arg, int) else Dtype.FLOAT
+    
+    def emit_to_temp(self, op: QuadInstructionType,
+                arg1: ArgumentType,
+                arg2: ArgumentType) -> str:
         """ 
         This method generates a temporary variable for the result of the required operation,
         and emits the relevant code for the execution. 
         """
         # Checks the real dtype of the result, and create temp variable.
-        affective_type = self.symbols[arg1].affective_type(self.symbols[arg2])
+        affective_type = self._arg_type(arg1).affective_type(self._arg_type(arg2))
         temp = self.newtemp(affective_type)
         # Generate the instructions.
-        self.emit_op_dest(op,(temp, affective_type), arg1, arg2)
-        return temp, affective_type
+        self.emit_op_dest(op, temp, arg1, arg2)
+        return temp
 
     def emit_op_dest(self, op: QuadInstructionType,
-                dest_name: str,
-                *args: str) -> None:
+                dest_name: ArgumentType,
+                *args: ArgumentType) -> None:
 
-        try:
-            dest = (dest_name, self.symbols[dest_name])
-        except KeyError:
-            raise ValueError(f"Cannot find symbol {dest_name} in the symbol table!")
+        dest_dtype = self._arg_type(dest_name)
 
         if args:
-            self.auto_cast(dest[1], tuple(args))
-        self.emit(op.get_bytype(dest[1]), dest, *[arg[0] for arg in args])
+            self.auto_cast(dest_dtype, *args)
+        self.emit(op.get_bytype(dest_dtype), dest_name, *args)
     
     def apply_labels(self) -> None:
         for i, (op, arg1, arg2, arg3) in enumerate(self.code):
@@ -94,8 +102,16 @@ class QuadCode:
     def peek_break_scope(self) -> str:
         return self.break_scopes_stack[-1]
 
+    @staticmethod
+    def _printable(val: Union[str, int, float, QuadInstruction]) -> str:
+        if isinstance(val, str):
+            return val
+        elif isinstance(val, QuadInstruction):
+            return val.name
+        return str(val)
+    
     def write(self, filename: str) -> None:
         self.apply_labels()
         with open(filename, 'w') as f:
             for line in self.code:
-                f.write(f"{line[0].name} {line[1]} {line[2]} {line[3]}")
+                f.write(" ".join([self._printable(j) for j in line]))

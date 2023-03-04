@@ -6,7 +6,7 @@ from typing import Iterable, List, Union, Optional
 from consts import QuadInstruction, QuadInstructionType, Dtype, CplBinaryOp
 from quad_code import QuadCode
 
-CONTINUE_ON_SEMANTIC_ERROR = False
+RECOVER_FROM_ERROR = False
 
 @dataclass
 class AstNode:
@@ -55,7 +55,7 @@ class AstNode:
                 for element in val:
                     self._visit_child(element)
         except Exception as e:
-            if CONTINUE_ON_SEMANTIC_ERROR:
+            if RECOVER_FROM_ERROR:
                 self._logger.error(f"Error while visiting {val}: {e}")
             else:
                 raise 
@@ -116,7 +116,7 @@ class AssignStmt(Stmt):
     expr: Expression
 
     def after(self):
-        code.emit_op_dest(QuadInstructionType.ASN, self._id, (self.expr.val, self.expr.dtype))
+        code.emit_op_dest(QuadInstructionType.ASN, self._id, expression_raw(self.expr))
 
 @dataclass
 class InputStmt(Stmt):
@@ -125,33 +125,31 @@ class InputStmt(Stmt):
         code.emit_op_dest(QuadInstructionType.INP, self.id)
 
 @dataclass
-class StmtList(AstNode):
-    stmts: List[AstNode]
-
-@dataclass
 class OutputStmt(Stmt):
     expr: Expression
     def after(self):
-        code.emit_op_dest(QuadInstructionType.PRT, self.expr.val)
+        code.emit_op_dest(QuadInstructionType.PRT, expression_raw(self.expr))
 
 @dataclass
 class IfStmt(Stmt):
-    bool_expr: BoolExpr
+    bool_expr: Expression
     
     @AstNode.after_visit('bool_expr')
     def after_boolexp(self):
         self.false_label = code.newlabel()
-        code.emit(QuadInstruction.JMPZ, self.bool_expr.target, self.false_label)
+        self.end_label = code.newlabel()
+        code.emit(QuadInstruction.JMPZ, expression_raw(self.bool_expr), self.false_label)
 
     true_stmts: StmtList
     
     @AstNode.before_visit('false_stmts')
     def before_false(self):
+        code.emit(QuadInstruction.JUMP, self.end_label)
         code.emitlabel(self.false_label)
     
     false_stmts: StmtList
     def after(self):
-        code.emitlabel()
+        code.emitlabel(self.end_label)
     
 @dataclass
 class WhileStmt(Stmt):
@@ -160,11 +158,11 @@ class WhileStmt(Stmt):
         self.exit_label = code.newlabel()
         code.push_break_scope(self.exit_label)
 
-    bool_expr: BoolExpr
+    bool_expr: Expression
     
     @AstNode.after_visit('bool_expr')
     def after_boolexp(self):
-        code.emit(QuadInstruction.JMPZ, self.bool_expr.target, self.exit_label)
+        code.emit(QuadInstruction.JMPZ, expression_raw(self.bool_expr), self.exit_label)
     
     stmts: StmtList
     
@@ -178,11 +176,11 @@ class Case(AstNode):
     number: Number
     stmts: StmtList
 
-    cmp_source: Identifier = None
+    cmp_source: Optional[Expression] = None
 
     def before(self):
         self._end_label = code.newlabel()
-        tmpname, _ = code.emit_op_temp(QuadInstructionType.EQL, self.number, self.cmp_source)
+        tmpname = code.emit_to_temp(QuadInstructionType.EQL, self.number, expression_raw(self.cmp_source))
         code.emit(QuadInstruction.JMPZ, tmpname, self._end_label)
 
     def after(self):
@@ -191,15 +189,16 @@ class Case(AstNode):
 @dataclass
 class SwitchStmt(Stmt):
     def before(self):
-        code.push_break_scope()
+        code.push_break_scope(code.newlabel())
 
     expr: Expression
 
     @AstNode.before_visit('cases')
     def before_cases(self):
         # Each case should know where to compare from!
+        exp_target = expression_raw(self.expr)
         for c in self.cases:
-            c.cmp_source = self.expr.val
+            c.cmp_source = exp_target
 
     cases: List[Case]
     default: StmtList
@@ -225,34 +224,30 @@ class BinaryOpExpression(AstNode):
     right: Expression
     op: CplBinaryOp
     
-    target: Optional[Expression] = None
+    target: Optional[Identifier] = None
     
     def after(self):
         try:
             # Basic supported ops - are just compiled right away
             op, flip = self.op.to_quad_op()
-            l, r = self.right.val, self.left.val if flip else self.left.val, self.right.val
-            res, restype = code.emit_op_temp(op, self.target, l, r)
-            self.target = Expression(res, restype)
-        except:
+            l, r = (self.right, self.left) if flip else (self.left, self.right)
+            res = code.emit_to_temp(op, expression_raw(l), expression_raw(r))
+            self.target = res
+        except KeyError:
             if self.op not in (CplBinaryOp.AND, CplBinaryOp.OR):
                 raise ValueError(f"Unsupported binary op: {self.op}")
             # AND, OR are special cases. They're actually like checking out the Addition result.
-            add_res, _ = code.emit_op_temp(QuadInstructionType.ADD, self.target, self.left.val)
+            add_res = code.emit_to_temp(QuadInstructionType.ADD, self.left.raw_result, self.right.raw_result)
             greater_thresh = 1 if self.op == CplBinaryOp.AND else 0
-            res, restype = code.emit_op_temp(QuadInstructionType.GRT, self.target, add_res, greater_thresh)
-            self.target = Expression(res, restype)
-
-
-@dataclass
-class BoolExpr(AstNode):
-    pass
+            res = code.emit_to_temp(QuadInstructionType.GRT, add_res, greater_thresh)
+            self.target = res
 
 @dataclass
-class NotBoolExpr(BoolExpr):
-    expr: BoolExpr
+class NotBoolExpr(AstNode):
+    source: Expression
+    target: Optional[Identifier] = None
     def after(self):
-        code.emit_op_temp(QuadInstructionType.NOT, self.expr.target)
+        self.target = code.emit_to_temp(QuadInstructionType.EQL, expression_raw(self.target), 0)
 
 @dataclass
 class Declarations(AstNode):
@@ -271,16 +266,15 @@ class CastExpression(AstNode):
     arg: Expression
     _to_type: Dtype
     
-    target: Optional[Expression] = None
+    target: Optional[Identifier] = None
     def after(self):
-        if self.arg.dtype == self._to_type:
-            raise ValueError("Cannot cast to same type!")
-        tname, ttype = code.newtemp(self._to_type)
-        code.emit(QuadInstructionType.ITOR if \
+        pass
+        tname = code.newtemp(self._to_type)
+        code.emit(QuadInstruction.ITOR if \
                     self._to_type == Dtype.INT else \
-                    QuadInstructionType.RTOI,
+                    QuadInstruction.RTOI,
                     tname, self.arg.val)
-        self.target = Expression(tname, ttype)
+        self.target = tname
 
 @dataclass
 class Program(AstNode):
@@ -291,10 +285,14 @@ class Program(AstNode):
     def print_hello(self):
         print("Hello!")
 
-@dataclass
-class Expression(AstNode):
-    val: Union[BinaryOpExpression, Number, Identifier]
-    dtype: Dtype
+def expression_raw(expression: Optional[Expression]) -> Union[Number, Identifier]:
+    assert expression is not None, "Expression is None!"
+    if isinstance(expression, (BinaryOpExpression, CastExpression, NotBoolExpr)):
+        target = expression.target
+        assert target is not None, "Expression target is None!"
+        return target
+    return expression
 
 Number = Union[int, float]
 Identifier = str
+Expression = Union[BinaryOpExpression, NotBoolExpr, Identifier, Number, CastExpression]

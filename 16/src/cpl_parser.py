@@ -10,7 +10,7 @@ from sly import Parser
 from cpl_lexer import CplLexer
 from consts import Dtype
 
-from cpl_ast import Program, BinaryOpExpression, BinaryOpExpression, BoolExpr, Expression,\
+from cpl_ast import Program, BinaryOpExpression, BinaryOpExpression, Expression,\
     IfStmt, WhileStmt, SwitchStmt, Case, BreakStmt, AssignStmt,\
         InputStmt, OutputStmt, Declarations, Declaration, NotBoolExpr, CastExpression
 
@@ -114,7 +114,7 @@ class CplParser(Parser):
         return BinaryOpExpression(p[0], p[1], CplBinaryOp.AND)
     
     @_('NOT "(" boolexpr ")"', "expression RELOP expression")
-    def boolfactor(self, p) -> BoolExpr:
+    def boolfactor(self, p) -> Expression:
         if len(p) == 4:
             return NotBoolExpr(p[2])
         return BinaryOpExpression(p[0], p[2], p[1])
@@ -123,18 +123,18 @@ class CplParser(Parser):
     def expression(self, p):
         if len(p) == 1:
             return p[0]
-        return BinaryOpExpression(p[0], p[1], CplBinaryOp.ADD if p[1].value == '+' else CplBinaryOp.SUB)
+        return BinaryOpExpression(p[0], p[1], p[1])
     
     @_('term MULOP factor', 'factor')
     def term(self, p):
         if len(p) == 1:
             return p[0]
-        return BinaryOpExpression(p[0], p[1], CplBinaryOp.MLT if p[1].value == '*' else CplBinaryOp.DIV)
+        return BinaryOpExpression(p[0], p[1], p[1])
     
     @_('"(" expression ")"', 'CAST "(" expression ")"', 'ID', 'NUM')
     def factor(self, p):
         if len(p) == 3:
             return p[1]
-        elif len(p) == 4:
+        if len(p) == 4:
             return CastExpression(p[2], p[0])
-        return p[0]
+        return p[0] 
