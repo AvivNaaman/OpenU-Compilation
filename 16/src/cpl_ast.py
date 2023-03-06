@@ -316,9 +316,15 @@ class CastExpression(AstNode):
     arg: Expression
     _to_type: Dtype
     
-    target: Optional[Identifier] = None
+    target: Optional[Union[Identifier, Number]] = None
     def after(self):
-        pass
+        # If type of expression is the same as requested, no need to cast.
+        # Set the result to the result of the input expression itself.
+        if code.get_type(expression_raw(self.arg)) == self._to_type:
+            self.target = expression_raw(self.arg)
+            return
+
+        # cast is actually changing the expression, add a new instruction to perform it.
         tname = code.newtemp(self._to_type)
         code.emit(QuadInstruction.ITOR if \
                     self._to_type == Dtype.INT else \

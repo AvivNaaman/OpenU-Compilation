@@ -117,7 +117,7 @@ class QuadCode:
         """ This method adds cast for all the arguments to the dest_type, if needed. """
         results = {}
         for to_cast in args:
-            to_cast_dtype = self._arg_type(to_cast)
+            to_cast_dtype = self.get_type(to_cast)
                 
             # Cast is unnecessary.    
             if to_cast_dtype == dest_type:
@@ -133,9 +133,11 @@ class QuadCode:
                                  f"of type {to_cast_dtype} to type {dest_type}!")
         return results
     
-    def _arg_type(self, arg: ArgumentType) -> Dtype:
+    def get_type(self, arg: ArgumentType) -> Dtype:
         """ 
         Returns the data type of an emit method argument.
+        Raises a KeyError if the argument is a string (identifier) and is not in the symbol table,
+        meaning it's a non-existing variable or temporary variable.
         """
         # If argument to cast is a string - it's an identifier,
         if isinstance(arg, str):
@@ -152,7 +154,7 @@ class QuadCode:
         Emits an operation with a destination variable created automatically as a temp variable.
         """
         # Checks the real dtype of the result, and create temp variable.
-        affective_type = self._arg_type(arg1).affective_type(self._arg_type(arg2))
+        affective_type = self.get_type(arg1).affective_type(self.get_type(arg2))
         temp = self.newtemp(affective_type)
         # Generate the instructions.
         self.emit_op_dest(op, temp, arg1, arg2)
@@ -163,7 +165,7 @@ class QuadCode:
                 *args: ArgumentType) -> None:
         """ Emits an operation with a destination variable specified. """
 
-        dest_dtype = self._arg_type(dest_name)
+        dest_dtype = self.get_type(dest_name)
 
         # Apply implicit casts, and check for required explicit casts.
         results = self.auto_cast(dest_dtype, *args)

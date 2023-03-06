@@ -1,4 +1,5 @@
 /* Test Boolean Expressions */
+/* TODO: Test! */
 a, b, c: int;
 {
     if (b == c) {output(1);} else {output(0);}
