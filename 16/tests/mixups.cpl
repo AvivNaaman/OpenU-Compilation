@@ -3,7 +3,7 @@ This file tests for collisions avoidance in both labels and temp variables gener
 It is mostly for testing the internal structure of the compiler.
 it might just turn useless for other imlpementations.
 */
-
+/* Tested: Ok. */
 temp0, temp1, temp2, temp3, temp4, temp5, temp6: float;
 Label0, Label1, Label2, Label3, Label4: int;
 {

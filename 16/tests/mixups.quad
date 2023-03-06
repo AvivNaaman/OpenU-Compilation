@@ -1,40 +1,43 @@
-IMLT temp7 4 3
-IADD temp8 5 temp7
-IDIV temp9 6 7
+IMLT temp7 4 3 # 4 * 3
+IADD temp8 5 temp7  # 5 + 4 * 3
+IDIV temp9 6 7 # 6 / 7
 ITOR temp11 temp9
-RMLT temp10 temp11 10.2
+RMLT temp10 temp11 10.2 #  6 / 7 * 10.2
 ITOR temp13 temp8
-RSUB temp12 temp13 temp10
-RSUB temp14 temp12 temp4
-RPRT temp14
-RMLT temp15 temp1 temp2
-RADD temp16 temp0 temp15
+RSUB temp12 temp13 temp10 # 5 + 4 * 3 - 6 / 7 * 10.2
+RSUB temp14 temp12 temp4 # temp14 = 5 + 4 * 3 - 6 / 7 * 10.2 - temp4
+RPRT temp14 # output temp14.
+RMLT temp15 temp1 temp2 # temp15 = temp1 * temp2
+RADD temp16 temp0 temp15 # temp16 = temp0 + temp1 * temp2
 ITOR temp18 7
-RDIV temp17 temp3 temp18
-ITOR temp20 99
-RMLT temp19 temp17 temp20
-RSUB temp21 temp16 temp19
+RDIV temp17 temp3 temp18 # temp17 = temp3 / 7
+ITOR temp20 99 
+RMLT temp19 temp17 temp20 # temp19 = temp3 / 7 * 99
+RSUB temp21 temp16 temp19 # temp21 = temp0 + temp1 * temp2 - temp3 / 7 * 99
 ITOR temp23 500
-RSUB temp22 temp21 temp23
-REQL temp24 temp22 9490043.4
-JMPZ temp24 39
-IEQL temp25 0 Label0
-JMPZ temp25 25
+RSUB temp22 temp21 temp23 # temp22 = temp0 + temp1 * temp2 - temp3 / 7 * 99 - 500
+REQL temp24 temp22 9490043.4 # if temp22 == 9490043.4:
+JMPZ temp24 42
+IEQL temp25 0 Label0 # Switch variable is temp25. case 0:
+JMPZ temp25 26 # goto case 1
 IPRT Label1
-JUMP 37
-IEQL temp26 1 Label0
-JMPZ temp26 29
+JUMP 40 # break
+JUMP 28 # fall-through (unused)
+IEQL temp26 1 Label0 # check case 1
+JMPZ temp26 31 # goto case 2 if fail
 IPRT Label2
-JUMP 37
-IEQL temp27 2 Label0
-JMPZ temp27 32
-IPRT Label3
-IEQL temp28 3 Label0
-JMPZ temp28 36
+JUMP 40 # break
+JUMP 33 # fall-through (unused)
+IEQL temp27 2 Label0 # check case 2
+JMPZ temp27 35 # goto case 3 test if fail
+IPRT Label3 
+JUMP 37 # fall-through
+IEQL temp28 3 Label0 # check case 3
+JMPZ temp28 39 # goto default if fail
 IPRT Label4
-JUMP 37
-RPRT 1.5
-RPRT temp5
-JUMP 40
-RPRT temp6
+JUMP 40 # break
+RPRT 1.5 # default
+RPRT temp5 # post-switch
+JUMP 43 # skip else
+RPRT temp6 # Else
 HALT
