@@ -1,4 +1,5 @@
 /* This file's purpose is to test loops & switch statements, including break; instructions. */
+/* Tested working. */
 a, b, c: int;
 {
 

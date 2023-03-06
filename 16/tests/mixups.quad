@@ -20,19 +20,19 @@ REQL temp24 temp22 9490043.4
 JMPZ temp24 39
 IEQL temp25 0 Label0
 JMPZ temp25 25
-IPRT 39
-JUMP Label3
+IPRT Label1
+JUMP 37
 IEQL temp26 1 Label0
 JMPZ temp26 29
-IPRT 40
-JUMP Label3
+IPRT Label2
+JUMP 37
 IEQL temp27 2 Label0
 JMPZ temp27 32
 IPRT Label3
 IEQL temp28 3 Label0
 JMPZ temp28 36
-IPRT 25
-JUMP Label3
+IPRT Label4
+JUMP 37
 RPRT 1.5
 RPRT temp5
 JUMP 40

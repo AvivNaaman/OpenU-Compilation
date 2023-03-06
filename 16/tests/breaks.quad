@@ -1,50 +1,54 @@
 INQL temp1 a b
-JMPZ temp1 19
+JMPZ temp1 19 # condition fails
 IADD temp2 b 1
 IASN b temp2
 ISUB temp3 c 1
 IASN c temp3
 IEQL temp4 b c
 JMPZ temp4 11
-JUMP 19
+JUMP 19 # break
 JUMP 16
 ISUB temp5 b 5
 IEQL temp6 temp5 a
 JMPZ temp6 16
-JUMP 19
+JUMP 19 # break
 JUMP 16
 IDIV temp7 a 2
 IASN a temp7
-JUMP Label1
+JUMP 1 # While - goto boolexp
 IMLT temp8 b c
 ISUB temp9 a temp8
-IADD temp10 temp9 7
-IEQL temp11 1 temp10
-JMPZ temp11 26
+IADD temp10 temp9 7 # switch (a - b * c + 7) ===> against temp10!
+IEQL temp11 1 temp10 #  case 1 test
+JMPZ temp11 27 # goto case 2 test
 IMLT temp12 111 a
 IPRT temp12
-IEQL temp13 2 temp10
-JMPZ temp13 34
-ITOR temp15 2
+JUMP 29 # goto middle of case 2 after boolexp
+IEQL temp13 2 temp10 # case 2 test
+JMPZ temp13 36 # goto case 3 test
+ITOR temp15 2 
 RMLT temp14 temp15 2.5
 ITOR temp17 1
 RSUB temp16 temp14 temp17
-RPRT temp16
-JUMP Label7
-IEQL temp18 3 temp10
-JMPZ temp18 38
+RPRT temp16 # execute output
+JUMP 54 # break --> end of program.
+JUMP 38 # goto case 3 middle, actually useless.
+IEQL temp18 3 temp10 # case 3 test
+JMPZ temp18 41 # goto case 4 test
 ISUB temp19 b 3
 IPRT temp19
-IEQL temp20 4 temp10
-JMPZ temp20 43
+JUMP 43
+IEQL temp20 4 temp10 # case 4 test
+JMPZ temp20 47 # goto case 5 test
 ITOR temp22 b
 RADD temp21 5.5 temp22
 RPRT temp21
-IEQL temp23 5 temp10
-JMPZ temp23 48
+JUMP 49 # goto case 5 middle, actually useless.
+IEQL temp23 5 temp10 # case 5 test
+JMPZ temp23 52 # goto default case
 IADD temp24 6 c
 IPRT temp24
-JUMP Label7
-ISUB temp25 7 a
+JUMP 54 # break --> end of program.
+ISUB temp25 7 a # default case starts here
 IPRT temp25
-HALT
+HALT # end of program

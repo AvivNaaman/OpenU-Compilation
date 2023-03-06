@@ -91,7 +91,9 @@ class QuadCode:
     def newlabel(self) -> str:
         """ Generates a new distinct semantic label. """
         lname =  f"{self.LABEL_PFX}{self.label_counter}"
-        while lname in self.labels:
+        # Avoid name collisions with existing symbols (non-temps)
+        # Such collision will cause a major issue during label replacement later.
+        while lname in self.symbols:
             self.label_counter += 1
             lname =  f"{self.LABEL_PFX}{self.label_counter}"
         self.label_counter += 1

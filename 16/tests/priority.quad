@@ -1,0 +1,55 @@
+IASN a 1
+IMLT temp1 5 7
+ISUB temp2 temp1 8
+IASN a temp2
+ISUB temp3 7 8
+IMLT temp4 5 temp3
+IASN a temp4
+IMLT temp5 5 7
+ISUB temp6 8 temp5
+IADD temp7 temp6 3
+IASN a temp7
+IMLT temp8 8 7
+IADD temp9 1 temp8
+IMLT temp10 2 3
+IADD temp11 temp9 temp10
+IMLT temp12 6 4
+IADD temp13 temp11 temp12
+IMLT temp14 5 2
+IMLT temp15 temp14 4
+IMLT temp16 temp15 6
+IADD temp17 temp13 temp16
+IMLT temp18 3 3
+ISUB temp19 temp17 temp18
+IMLT temp20 2 1
+ISUB temp21 temp19 temp20
+ISUB temp22 temp21 1
+IASN a temp22
+IASN b 1
+IDIV temp23 5 7
+ISUB temp24 temp23 8
+IASN b temp24
+ISUB temp25 7 8
+IMLT temp26 5 temp25
+IASN b temp26
+IDIV temp27 5 7
+ISUB temp28 8 temp27
+IADD temp29 temp28 3
+IASN b temp29
+IMLT temp30 8 7
+IADD temp31 1 temp30
+IDIV temp32 2 3
+IADD temp33 temp31 temp32
+IDIV temp34 6 4
+IADD temp35 temp33 temp34
+IMLT temp36 5 2
+IDIV temp37 temp36 4
+IMLT temp38 temp37 6
+IADD temp39 temp35 temp38
+IDIV temp40 3 3
+ISUB temp41 temp39 temp40
+IDIV temp42 2 1
+ISUB temp43 temp41 temp42
+ISUB temp44 temp43 1
+IASN b temp44
+HALT

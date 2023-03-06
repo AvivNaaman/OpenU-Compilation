@@ -107,7 +107,11 @@ class AstNode:
         """ Called after visiting the node's children. """
         pass
 
-code: QuadCode = QuadCode()
+code: QuadCode
+""" 
+Though having a global variable is not always the best,
+it's the simplest way for this implementation. 
+"""
 
 @dataclass
 class Stmt(AstNode):
@@ -159,7 +163,10 @@ class WhileStmt(Stmt):
     def before(self):
         self.boolexp_label = code.newlabel()
         self.exit_label = code.newlabel()
+        # For break.
         code.label_scope.push(self.exit_label)
+        
+        code.emitlabel(self.boolexp_label)
 
     bool_expr: Expression
     
@@ -176,22 +183,45 @@ class WhileStmt(Stmt):
     
 @dataclass
 class Case(AstNode):
+    """
+    Case of a switch statement.
+    to enable fallthrough, jump is required to the next case's actions.
+    For this implementation, the code emission will be:
+    <COMPARE TO CASE VALUE>
+    JUMP TO NEXT CASE - <<NEXT>> IF FAIL
+    MIDDLE_OF_LABEL:
+    <...Statements...>
+    JUMP TO MIDDLE OF NEXT LABEL
+    NEXT:
+    .....
+    """
     number: Number
     stmts: StmtList
 
-    cmp_source: Optional[Expression] = None
+    cmp_source: Optional[Expression] = None # Number for comparison (Inherited from SwitchStmt)
+    middle_case_label: Optional[Label] = None # Label of stmts begin of this case (Inherited too)
+    middle_next_label: Optional[Label] = None # Label of stmts begin of next case (Inherited too)
 
     def before(self):
         self._end_label = code.newlabel()
         tmpname = code.emit_to_temp(QuadInstructionType.EQL, self.number, expression_raw(self.cmp_source))
         code.emit(QuadInstruction.JMPZ, tmpname, self._end_label)
+        # Enabled Fallthrough from previous case (if exists)
+        if self.middle_case_label:
+            code.emitlabel(self.middle_case_label)
 
     def after(self):
+        # Fall-Through to next case - if exists; 
+        # if break exists it will jump out of the switch anyway;
+        if self.middle_next_label:
+            code.emit(QuadInstruction.JUMP, self.middle_next_label)
         code.emitlabel(self._end_label)
 
+# TODO: Fallthrough is not implemented!
 @dataclass
 class SwitchStmt(Stmt):
     def before(self):
+        # For break.
         code.label_scope.push(code.newlabel())
 
     expr: Expression
@@ -200,13 +230,27 @@ class SwitchStmt(Stmt):
     def before_cases(self):
         # Each case should know where to compare from!
         exp_target = expression_raw(self.expr)
+        last_label = None
+
+        # For all cases but last
         for c in self.cases:
             c.cmp_source = exp_target
+            # For fallthrough - pass label to gen and label for jump
+            c.middle_case_label = last_label
+            c.middle_next_label = code.newlabel()
+            last_label = c.middle_next_label
+
+        # Last case fallsthrough to default case - no jump to label needed!
+        # Default case has no comparison, so it will always continue to the end of the switch,
+        # unless it has a break statement - which is handled by the label_scope anyway.
+        self.cases[-1].middle_next_label = None
 
     cases: List[Case]
+
     default: StmtList
 
     def after(self):
+        code.emitlabel(code.label_scope.peek())
         code.label_scope.pop()
 
 @dataclass
@@ -284,6 +328,10 @@ class CastExpression(AstNode):
 
 @dataclass
 class Program(AstNode):
+    def before(self):
+        global code
+        code = QuadCode()
+    
     declarations: Declarations
     stmts: StmtList
 
@@ -306,3 +354,4 @@ def expression_raw(expression: Optional[Expression]) -> Union[Number, Identifier
 Number = Union[int, float]
 Identifier = str
 Expression = Union[BinaryOpExpression, NotBoolExpr, Identifier, Number, CastExpression]
+Label = str

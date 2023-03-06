@@ -19,6 +19,10 @@ class Dtype(Enum):
         return Dtype.INT
     
 class SemanticError(Exception):
+    """ 
+    This exception is raised when a semantic error is encountered.
+    The semantic analyzer catches this exception and prints the error message.
+    """
     pass
 
 class QuadInstruction(Enum):
