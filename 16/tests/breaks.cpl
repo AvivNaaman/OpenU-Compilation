@@ -1,0 +1,41 @@
+/* This file's purpose is to test loops & switch statements, including break; instructions. */
+a, b, c: int;
+{
+
+    /* Make sure break is only allowed inside the context of a loop/switch */
+    /*if (b == c) {output(1);} else {break;}*/
+
+    while (a != b) {
+        b = b + 1;
+        c = c - 1;
+        if (b == c) {
+            break;
+        } else {
+            if (b - 5 == a) {
+                break;
+            } else {}
+        }
+        a = a / 2;
+    }
+
+    /*if (b == c) {output(1);} else {break;}*/
+
+    switch (a - b * c + 7) {
+        case 1:
+            output(111 * a);
+        case 2:
+            output(2 * 2.5 - 1);
+            break;
+        case 3:
+            output(b - 3);
+        case 4:
+            output(5.5 + b);
+        case 5:
+            output(6 + c);
+            break;
+        default:
+            output(7 - a);
+    }
+
+    /*if (b == c) {output(1);} else {break;}*/
+}

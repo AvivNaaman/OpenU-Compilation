@@ -9,7 +9,7 @@ from dataclasses import dataclass, fields
 import logging
 from typing import Iterable, List, Union, Optional
 
-from consts import QuadInstruction, QuadInstructionType, Dtype, CplBinaryOp
+from consts import QuadInstruction, QuadInstructionType, Dtype, CplBinaryOp, SemanticError
 from quad_code import QuadCode
 
 RECOVER_FROM_ERROR = False
@@ -60,11 +60,8 @@ class AstNode:
             elif isinstance(val, Iterable) and not isinstance(val, str):
                 for element in val:
                     self._visit_child(element)
-        except Exception as e:
-            if RECOVER_FROM_ERROR:
-                self._logger.error(f"Error while visiting {val}: {e}")
-            else:
-                raise 
+        except SemanticError as e:
+            self._logger.error(f"Semantic Error: {e}")
             return False
         return True
     
@@ -218,7 +215,7 @@ class BreakStmt(Stmt):
         try:
             code.emit(QuadInstruction.JUMP, code.label_scope.peek())
         except IndexError:
-            raise ValueError("Break statement outside of loop or switch-case.")
+            raise SemanticError("Break statement outside of loop or switch-case.")
 
 @dataclass
 class StmtList(AstNode):
@@ -240,10 +237,10 @@ class BinaryOpExpression(AstNode):
             res = code.emit_to_temp(op, expression_raw(l), expression_raw(r))
             self.target = res
         except KeyError:
-            if self.op not in (CplBinaryOp.AND, CplBinaryOp.OR):
-                raise ValueError(f"Unsupported binary op: {self.op}")
             # AND, OR are special cases. They're actually like checking out the Addition result.
-            add_res = code.emit_to_temp(QuadInstructionType.ADD, self.left.raw_result, self.right.raw_result)
+            add_res = code.emit_to_temp(QuadInstructionType.ADD,
+                                        expression_raw(self.left),
+                                        expression_raw(self.right))
             greater_thresh = 1 if self.op == CplBinaryOp.AND else 0
             res = code.emit_to_temp(QuadInstructionType.GRT, add_res, greater_thresh)
             self.target = res
@@ -265,7 +262,10 @@ class Declaration(AstNode):
     _type: Dtype
     def after(self):
         for id in self.idlist:
-            code.add_symbol(id, self._type)
+            try:
+                code.add_symbol(id, self._type)
+            except ValueError:
+                raise SemanticError(f"Invalid re-definition of variable {id}.")
 
 @dataclass
 class CastExpression(AstNode):

@@ -27,10 +27,10 @@ class CplParser(Parser):
     def program(self, p):
         return Program(p[0], p[1])
     
-    @_('declarations declaration', 'declaration')
+    @_('declarations declaration', '')
     def declarations(self, p) -> Declarations:
-        if len(p) == 1:
-            return Declarations([p[0]])
+        if len(p) == 0:
+            return Declarations([])
         
         return Declarations(p[0].declarations + [p[1]])
     

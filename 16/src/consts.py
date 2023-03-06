@@ -18,6 +18,8 @@ class Dtype(Enum):
             return Dtype.FLOAT
         return Dtype.INT
     
+class SemanticError(Exception):
+    pass
 
 class QuadInstruction(Enum):
     """ This enum describes the instruction set of the Quad code. """

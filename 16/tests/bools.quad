@@ -1,0 +1,63 @@
+IEQL temp1 b c
+JMPZ temp1 5
+IPRT 1
+JUMP 6
+IPRT 0
+INQL temp2 b c
+JMPZ temp2 10
+IPRT 1
+JUMP 11
+IPRT 0
+ILSS temp3 b c
+JMPZ temp3 15
+IPRT 1
+JUMP 16
+IPRT 0
+IGRT temp4 b c
+JMPZ temp4 20
+IPRT 1
+JUMP 21
+IPRT 0
+IGRT temp5 c b
+JMPZ temp5 25
+IPRT 1
+JUMP 26
+IPRT 0
+ILSS temp6 c b
+JMPZ temp6 30
+IPRT 1
+JUMP 31
+IPRT 0
+IEQL temp7 a b
+IEQL temp8 b c
+IADD temp9 temp7 temp8
+IGRT temp10 temp9 0
+JMPZ temp10 38
+IPRT 1
+JUMP 39
+IPRT 0
+INQL temp11 a b
+IEQL temp12 b c
+IADD temp13 temp11 temp12
+IGRT temp14 temp13 0
+JMPZ temp14 46
+IPRT 1
+JUMP 47
+IPRT 0
+INQL temp15 a b
+INQL temp16 b c
+IADD temp17 temp15 temp16
+IGRT temp18 temp17 1
+JMPZ temp18 54
+IPRT 1
+JUMP 55
+IPRT 0
+IEQL temp19 a b
+INQL temp20 b c
+IADD temp21 temp19 temp20
+IGRT temp22 temp21 1
+JMPZ temp22 62
+IPRT 1
+JUMP 63
+IPRT 0
+HALT

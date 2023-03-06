@@ -5,7 +5,7 @@ And is used by the AST nodes to generate the final code.
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Union
 
-from consts import QuadInstruction, QuadInstructionType, Dtype
+from consts import QuadInstruction, QuadInstructionType, Dtype, SemanticError
 
 ArgumentType = Union[str, int, float]
 class BreakLabelScope:
@@ -61,7 +61,7 @@ class QuadCode:
         The method raises an error if the symbol already exists.
         """
         if name in self.symbols:
-            raise Exception(f"Symbol {name} of type {self.symbols[name]} already exists!")
+            raise ValueError(f"Symbol {name} of type {self.symbols[name]} already exists!")
         self.symbols[name] = dtype
     
     def emitlabel(self, label: str) -> None:
@@ -127,7 +127,7 @@ class QuadCode:
                 self.emit(QuadInstruction.ITOR, results[to_cast], to_cast)
             # Disable casting float --> int (required static_cast in source code)
             else:
-                raise ValueError(f"Cannot implicitly cast {to_cast} "+
+                raise SemanticError(f"Cannot implicitly cast {to_cast} "+
                                  f"of type {to_cast_dtype} to type {dest_type}!")
         return results
     

@@ -10,7 +10,7 @@ from consts import CplBinaryOp
 from sly import Lexer
 
 class CplLexer(Lexer):
-
+    # type: ignore
     tokens = { NUM, IF, ELSE, WHILE, BREAK,
               SWITCH, CASE, DEFAULT, FLOAT, INT,
               INPUT, OUTPUT, RELOP, ADDOP, MULOP, OR,
@@ -35,12 +35,13 @@ class CplLexer(Lexer):
     
     OR = r'\|\|'
     AND = r'&&'
-    NOT = r'!'
     
-    @_(r'(=|!)=|(<|>)=?')
+    @_(r'((=|!)=)|((<|>)=?)')
     def RELOP(self, t):
         t.value = CplBinaryOp(t.value)
         return t
+    
+    NOT = r'!'
     
     @_(r'\+|-')
     def ADDOP(self, t):

@@ -1,0 +1,15 @@
+/* Test Boolean Expressions */
+a, b, c: int;
+{
+    if (b == c) {output(1);} else {output(0);}
+    if (b != c) {output(1);} else {output(0);}
+    if (b < c) {output(1);} else {output(0);}
+    if (b > c) {output(1);} else {output(0);}
+    if (b <= c) {output(1);} else {output(0);}
+    if (b >= c) {output(1);} else {output(0);}
+
+    if (a == b || b == c) {output(1);} else {output(0);}
+    if (a != b || b == c) {output(1);} else {output(0);}
+    if (a != b && b != c) {output(1);} else {output(0);}
+    if (a == b && b != c) {output(1);} else {output(0);}
+}
