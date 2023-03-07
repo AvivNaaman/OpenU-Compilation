@@ -156,7 +156,7 @@ class IfStmt(Stmt):
     def after_boolexp(self):
         self.false_label = code.newlabel()
         self.end_label = code.newlabel()
-        code.emit(QuadInstruction.JMPZ, expression_raw(self.bool_expr), self.false_label)
+        code.emit(QuadInstruction.JMPZ, self.false_label, expression_raw(self.bool_expr))
 
     true_stmts: StmtList
     
@@ -183,7 +183,7 @@ class WhileStmt(Stmt):
     
     @AstNode.after_visit('bool_expr')
     def after_boolexp(self):
-        code.emit(QuadInstruction.JMPZ, expression_raw(self.bool_expr), self.exit_label)
+        code.emit(QuadInstruction.JMPZ, self.exit_label, expression_raw(self.bool_expr))
     
     stmts: StmtList
     
@@ -221,7 +221,7 @@ class Case(AstNode):
         if not isinstance(self.number, int):
             self.on_semantic_error(f"Case value must be an integer, got {self.number}!")
             
-        code.emit(QuadInstruction.JMPZ, tmpname, self._end_label)
+        code.emit(QuadInstruction.JMPZ, self._end_label, tmpname)
         # Enabled Fallthrough from previous case (if exists)
         if self.middle_case_label:
             code.emitlabel(self.middle_case_label)
