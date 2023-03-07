@@ -1,14 +1,13 @@
 from __future__ import annotations
 from enum import Enum, auto
 from typing import Dict, Tuple
-from typing import Self
 
 class Dtype(Enum):
     """ This enum describes the data types supported by the compiler. """
     INT = "int"
     FLOAT = "float"
     
-    def affective_type(self: Self, *others: Self) -> Self:
+    def affective_type(self: Dtype, *others: Dtype) -> Dtype:
         """
         Given a list of data types, returns the most general type.
         For CPL, the float type is selected when at least one of the types is float,
@@ -121,7 +120,7 @@ class QuadInstructionType(Enum):
     HALT = auto()
     
 
-    def get_bytype(self: Self, arg: Dtype) -> QuadInstruction:
+    def get_bytype(self: QuadInstructionType, arg: Dtype) -> QuadInstruction:
         """ 
         Returns the QuadInstruction with the given argument type
         matching the QuadInstructionType specified. 

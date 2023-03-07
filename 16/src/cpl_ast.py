@@ -54,18 +54,28 @@ class AstNode:
         """
         Visits a child property of the node, by it's name.
         """
-        try:
-            if isinstance(val, AstNode):
-                    val.visit()
-            elif isinstance(val, Iterable) and not isinstance(val, str):
-                for element in val:
-                    self._visit_child(element)
-        except SemanticError as e:
-            self._logger.error(f"Semantic Error: {e}")
-            return False
-        return True
+        result = True
+        if isinstance(val, AstNode):
+            try:
+                result &= val.visit()
+            except SemanticError as e:
+                self.on_semantic_error(str(e))
+                result = False
+        elif isinstance(val, Iterable) and not isinstance(val, str):
+            element: AstNode
+            for element in val:
+                try:
+                    result &= self._visit_child(element)
+                except SemanticError as e:
+                    self.on_semantic_error(str(e))
+                    result = False
+        return result
     
-    def visit(self):
+    def on_semantic_error(self, msg: str):
+        self._logger.error(f"Semantic Error: {msg}")
+        self._success = False
+    
+    def visit(self) -> bool:
         """ 
         Visits a node and all it's children recursively in field definition order,
         applying the methods bound to visitation order.
@@ -77,11 +87,12 @@ class AstNode:
             for func in self._bounds[field.name][0]:
                 func()
 
-            self._success &= self._visit_child(getattr(self, field.name))
+            self._success = self._visit_child(getattr(self, field.name)) and self._success
 
             for func in self._bounds[field.name][1]:
                 func()
         self.after()
+        return self._success
 
     @staticmethod
     def before_visit(prop_name: str):
@@ -205,6 +216,11 @@ class Case(AstNode):
     def before(self):
         self._end_label = code.newlabel()
         tmpname = code.emit_to_temp(QuadInstructionType.EQL, self.number, expression_raw(self.cmp_source))
+        
+        # Check if the case value is an integer
+        if not isinstance(self.number, int):
+            self.on_semantic_error(f"Case value must be an integer, got {self.number}!")
+            
         code.emit(QuadInstruction.JMPZ, tmpname, self._end_label)
         # Enabled Fallthrough from previous case (if exists)
         if self.middle_case_label:
@@ -230,6 +246,10 @@ class SwitchStmt(Stmt):
     def before_cases(self):
         # Each case should know where to compare from!
         exp_target = expression_raw(self.expr)
+        if code.get_type(exp_target) != Dtype.INT:
+            self.on_semantic_error("Switch expression must be of type int," + 
+                                   f"got {code.get_type(exp_target)}.")
+
         last_label = None
 
         # For all cases but last

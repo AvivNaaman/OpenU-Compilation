@@ -60,6 +60,7 @@ class CplLexer(Lexer):
     
     @_(r'\d+(\.\d+)?')
     def NUM(self, t):
+        # A number if float <==> has a decimal point.
         if '.' in t.value:
             t.value = float(t.value)
         else:
@@ -67,5 +68,3 @@ class CplLexer(Lexer):
         return t
     
     ID = r'[a-zA-Z_][a-zA-Z0-9_]*'
-    
-    
