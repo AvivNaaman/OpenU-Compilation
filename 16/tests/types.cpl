@@ -44,4 +44,13 @@ c, d: int;
             break;
         default:
     }
+
+    if (a == 5.5) {
+        input(a);
+    }
+    else {
+        if (a == 5) {
+            input(b);
+        } else {}
+    }
 }

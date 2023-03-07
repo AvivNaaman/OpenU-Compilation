@@ -92,6 +92,9 @@ class CplBinaryOp(Enum):
             self.LSSEQ: (QuadInstructionType.GRT, True),
         }[self]
 
+    def isrelop(self) -> bool:
+        """ Returns whether the operator is a relational operator. """
+        return self in {self.EQL, self.NQL, self.LSS, self.GRT, self.GRTEQ, self.LSSEQ}
 
 
 class QuadInstructionType(Enum):

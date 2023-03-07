@@ -44,5 +44,14 @@ JUMP 44
 IEQL temp29 0 d
 JMPZ temp29 47
 JUMP 47
+REQL temp30 a 5.5
+JMPZ temp30 51
+RINP a
+JUMP 56
+ITOR temp32 5
+REQL temp31 a temp32
+JMPZ temp31 56
+RINP b
+JUMP 56
 HALT
 Aviv Naaman

@@ -299,7 +299,7 @@ class BinaryOpExpression(AstNode):
             op, flip = self.op.to_quad_op()
             l, r = (self.right, self.left) if flip else (self.left, self.right)
             # boolean expression result is always an integer!
-            res = code.emit_to_temp(op, expression_raw(l), expression_raw(r), Dtype.INT)
+            res = code.emit_to_temp(op, expression_raw(l), expression_raw(r), Dtype.INT if self.op.isrelop() else None)
             self.target = res
         except KeyError:
             # AND, OR are special cases. They're actually like checking out the Addition result.

@@ -153,6 +153,8 @@ class QuadCode:
                 force_temp_dtype: Optional[Dtype] = None) -> str:
         """ 
         Emits an operation with a destination variable created automatically as a temp variable.
+        if force_temp_dtype is specified, the operation will be performed to a temp with the specified dtype,
+        but operation's dtype will be determined by the arguments' dtypes.
         """
         # Checks the real dtype of the result, and create temp variable.
         affective_type = self.get_type(arg1).affective_type(self.get_type(arg2))
@@ -165,12 +167,16 @@ class QuadCode:
                 dest_name: ArgumentType,
                 *args: ArgumentType,
                 op_dtype: Optional[Dtype] = None) -> None:
-        """ Emits an operation with a destination variable specified. """
+        """ 
+        Emits an operation with a destination variable specified.
+        if op_dtype is specified, the operation will be performed with the specified dtype,
+        and the argument will be casted to that op_dtype.
+        """
 
         dest_dtype = self.get_type(dest_name)
 
         # Apply implicit casts, and check for required explicit casts.
-        results = self.auto_cast(dest_dtype, *args)
+        results = self.auto_cast(op_dtype if op_dtype else dest_dtype, *args)
         updated_args = [
             results.get(a, a) for a in args
         ]
