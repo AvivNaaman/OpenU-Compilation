@@ -1,8 +1,0 @@
-RINP a  
-RINP b  
-RLSS temp1 a b
-JMPZ temp1 7 
-RPRT a  
-JUMP 8  
-RPRT b  
-HALT   

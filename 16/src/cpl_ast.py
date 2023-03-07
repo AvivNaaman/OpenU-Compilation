@@ -298,7 +298,8 @@ class BinaryOpExpression(AstNode):
             # Basic supported ops - are just compiled right away
             op, flip = self.op.to_quad_op()
             l, r = (self.right, self.left) if flip else (self.left, self.right)
-            res = code.emit_to_temp(op, expression_raw(l), expression_raw(r))
+            # boolean expression result is always an integer!
+            res = code.emit_to_temp(op, expression_raw(l), expression_raw(r), Dtype.INT)
             self.target = res
         except KeyError:
             # AND, OR are special cases. They're actually like checking out the Addition result.
@@ -306,7 +307,8 @@ class BinaryOpExpression(AstNode):
                                         expression_raw(self.left),
                                         expression_raw(self.right))
             greater_thresh = 1 if self.op == CplBinaryOp.AND else 0
-            res = code.emit_to_temp(QuadInstructionType.GRT, add_res, greater_thresh)
+            # should be automatically integers anyway, but doesn't matter.
+            res = code.emit_to_temp(QuadInstructionType.GRT, add_res, greater_thresh, Dtype.INT)
             self.target = res
 
 @dataclass

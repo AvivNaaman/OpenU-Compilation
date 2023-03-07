@@ -149,20 +149,22 @@ class QuadCode:
     
     def emit_to_temp(self, op: QuadInstructionType,
                 arg1: ArgumentType,
-                arg2: ArgumentType) -> str:
+                arg2: ArgumentType,
+                force_temp_dtype: Optional[Dtype] = None) -> str:
         """ 
         Emits an operation with a destination variable created automatically as a temp variable.
         """
         # Checks the real dtype of the result, and create temp variable.
         affective_type = self.get_type(arg1).affective_type(self.get_type(arg2))
-        temp = self.newtemp(affective_type)
+        temp = self.newtemp(affective_type if force_temp_dtype is None else force_temp_dtype)
         # Generate the instructions.
-        self.emit_op_dest(op, temp, arg1, arg2)
+        self.emit_op_dest(op, temp, arg1, arg2, op_dtype=affective_type)
         return temp
 
     def emit_op_dest(self, op: QuadInstructionType,
                 dest_name: ArgumentType,
-                *args: ArgumentType) -> None:
+                *args: ArgumentType,
+                op_dtype: Optional[Dtype] = None) -> None:
         """ Emits an operation with a destination variable specified. """
 
         dest_dtype = self.get_type(dest_name)
@@ -172,7 +174,7 @@ class QuadCode:
         updated_args = [
             results.get(a, a) for a in args
         ]
-        self.emit(op.get_bytype(dest_dtype), dest_name, *updated_args)
+        self.emit(op.get_bytype(dest_dtype if op_dtype is None else op_dtype), dest_name, *updated_args)
     
     def apply_labels(self) -> None:
         """ Replaces instances of a semantic label in the code with it's emitted line number. """
