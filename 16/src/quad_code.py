@@ -195,9 +195,11 @@ class QuadCode:
             return val.name
         return str(val)
     
-    def write(self, dest: Union[str, Path]) -> None:
+    def write(self, dest: Union[str, Path], epilogue: Optional[str] = None) -> None:
         """ Writes the final code to an output raw file. """
         self.apply_labels()
         with open(dest, 'w', encoding='utf-8') as output_file:
             for line in self.code:
                 output_file.write(" ".join(filter(None, [self._printable(j) for j in line])) + '\n')
+            if epilogue:
+                output_file.write(epilogue)
