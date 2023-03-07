@@ -18,23 +18,31 @@ IASN c temp10
 ITOR temp11 a
 IADD temp12 temp11 d
 IASN c temp12
-ITOR temp13 d
-ITOR temp15 temp13
-RADD temp14 a temp15
-RASN b temp14
-RTOI temp16 a
-RTOI temp17 c
-RMLT temp18 temp16 temp17
-ITOR temp19 temp18
-IASN c temp19
-ITOR temp20 b
-ITOR temp21 a
-IADD temp22 temp20 temp21
-ITOR temp23 temp22
-RASN b temp23
-ITOR temp24 b
-ITOR temp25 a
-IADD temp26 temp24 temp25
-RTOI temp27 temp26
-RASN b temp27
+ITOR temp14 d
+RADD temp13 a temp14
+RASN b temp13
+RTOI temp15 c
+RMLT temp16 a temp15
+ITOR temp17 temp16
+IASN c temp17
+ITOR temp18 b
+ITOR temp19 a
+IADD temp20 temp18 temp19
+ITOR temp21 temp20
+RASN b temp21
+ITOR temp22 b
+ITOR temp23 a
+IADD temp24 temp22 temp23
+RTOI temp25 temp24
+RASN b temp25
+ITOR temp26 a
+IEQL temp27 0 temp26
+JMPZ temp27 41
+IEQL temp28 0 d
+JMPZ temp28 44
+JUMP 44
+IEQL temp29 0 d
+JMPZ temp29 47
+JUMP 47
 HALT
+Aviv Naaman

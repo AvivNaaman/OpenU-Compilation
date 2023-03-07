@@ -4,6 +4,7 @@ Main entry point for the CPL to Quad compiler.
 
 import logging
 from pathlib import Path
+from typing import Optional
 
 import sly
 from cpl_parser import CplParser
@@ -32,15 +33,20 @@ if __name__ == '__main__':
     # Tokenize + Parse
     lexer = CplLexer()
     parser = CplParser()
+    tokens = lexer.tokenize(source)
     try:
-        tokens = lexer.tokenize(source)
-        prog: Program = parser.parse(tokens)
+        prog: Optional[Program] = parser.parse(tokens)
+    # Sly can only catch a single lexical error.
     except sly.lex.LexError as e:
-        logger.error("Lexical error: %s" % e)
+        logger.error("Lexical error found in source file. Aborting.")
         exit(1)
+    except Exception as e:
+        logger.error(f"Unexpected error {e} occurred while parsing source file. Aborting.")
+        prog = None
     
+    # Parse failed error - due to exception
     if prog is None:
-        logger.error("Parsing failed. View output above for more information.")
+        logger.error("Parsing failed. Aborting. View output above for more information.")
         exit(1)
 
     # To generate code for the program, visit the AST's nodes.
@@ -48,14 +54,14 @@ if __name__ == '__main__':
     
     # Check if the program was successfully compiled.
     if not success or prog.code is None:
-        logger.error("Compilation failed due to semantic error. View output above for more information.")
+        logger.error("Compilation failed due to semantic error. Aborting. View output above for more information.")
         exit(1)
 
     # Write final output file
     try:
         prog.code.write(file_path.parent / (file_path.stem + '.quad'), STUDENT_NAME)
     except IOError:
-        logger.error("Compilation succeeded, but failed to write output file %s." % str(file_path))
+        logger.error("Compilation succeeded, but failed to write output file %s. Aborting." % str(file_path))
         exit(1)
 
     # Write student's name to stderr

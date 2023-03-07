@@ -1,0 +1,9 @@
+{ 
+    while (true) {
+        output(input(50));
+    }
+
+    while (true) {
+        output(input(50));
+    }
+}

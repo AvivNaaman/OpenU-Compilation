@@ -8,8 +8,8 @@
             "name": "CPQ",
             "type": "python",
             "request": "launch",
-            "program": "16/src/main.py",
-            "args": ["16/tests/mixups.cpl"],
+            "program": "16/src/cpq.py",
+            "args": ["16/tests/parse_errors.cpl"],
             "console": "integratedTerminal",
             "justMyCode": true
         }

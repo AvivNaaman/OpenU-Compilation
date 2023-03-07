@@ -10,15 +10,24 @@ from consts import CplBinaryOp
 from sly import Lexer
 
 class CplLexer(Lexer):
+    def __init__(self):
+        super().__init__()
+        self.lineno = 1
+
     # type: ignore
     tokens = { NUM, IF, ELSE, WHILE, BREAK,
               SWITCH, CASE, DEFAULT, FLOAT, INT,
               INPUT, OUTPUT, RELOP, ADDOP, MULOP, OR,
               AND, NOT, CAST, ID }
     literals = { '=', ';', '(', ')', '{', '}', ',', ':' }
-    ignore = ' \t\n'
+    ignore = ' \t'
     # Multi-line c-style comment with option to put anything inside /* */:
     ignore_comment = r'/\*(.|\n)*?\*/'
+    
+    # Define a rule so we can track line numbers
+    @_(r'\n+')
+    def ignore_newline(self, t):
+        self.lineno += len(t.value)
     
 
     BREAK = r'break'
@@ -68,3 +77,8 @@ class CplLexer(Lexer):
         return t
     
     ID = r'[a-zA-Z_][a-zA-Z0-9_]*'
+
+    def error(self, t):
+        print('Line %d: Bad character %r' % (self.lineno, t.value[0]))
+        self.index += 1
+        super().error(t)

@@ -20,31 +20,12 @@ c, d: int;
     b = static_cast<int>(b) + static_cast<int>(a);
     b = static_cast<float>(static_cast<int>(b) + static_cast<int>(a));
 
-    /* 
-        Should produce temp for switch result;
-        comparison is not to int 0, but rather a new temp 
-        casted from it's integer to a Real! OK.
-    */
-    switch (c * d - a) {
-        case 0: 
-            break;
-        default:
-    }
     /*
         Should produce temp for switch result;
         comparison will get done right away - int to int.
     */
     switch (static_cast<int>(a)) {
         case 0:
-        default:
-    }
-
-    /*
-        comparison will get done only after cast and new temp.
-    */
-    switch (a) {
-        case 0:
-            break;
         default:
     }
 
@@ -56,23 +37,7 @@ c, d: int;
             break;
         default:
     }
-    /*
-        comparison should be after casting of d to float
-    */
-    switch(d) {
-        case 0.5:
-            break;
-        default:   
-    }
 
-    /*
-        comparison should be right away.
-    */
-    switch (a) {
-        case 0.5:
-            break;
-        default:
-    }
 
     switch(d) {
         case 0:

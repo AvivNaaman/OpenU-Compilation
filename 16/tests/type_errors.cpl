@@ -1,6 +1,7 @@
 /* Test input file for type-related errors */
 a, b: float;
 c, d: int;
+/*a: int;*/
 {
     /* Each line here should cause a type error from casting float to int! 
     /*d = static_cast<int>(c) - b;
@@ -16,4 +17,32 @@ c, d: int;
     /*c = 50.0;
     /*d = b;
     /*d = d + c * d - 50 + 2.5;*/
+    /*
+
+FLOAT cannot be used for switch!
+    switch (a) {
+        case 0:
+            break;
+        default:
+    }
+`
+    switch (c * d - a) {
+        case 0: 
+            break;
+        default:
+    }
+    switch(d) {
+        case 0.5:
+            break;
+        default:   
+    }
+
+    switch (a) {
+        case 0.5:
+            break;
+        default:
+    }
+
+
+    */
 }
